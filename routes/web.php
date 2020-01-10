@@ -14,3 +14,12 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::prefix('api')->group(function () {
+    Route::prefix('xsmb')->group(function () {
+	    Route::get('', 'XSMBController@index')->name('index');
+	    Route::get('answer', 'XSMBController@answer')->name('answer');
+	});
+
+});
