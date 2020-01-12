@@ -48,6 +48,7 @@ class XSMBHelper
 					break;
 				case 'query_xsmb_special':
 					$xsmb = rand (10, 99);
+					// TODO: request knowledge really. If time < 6h30 and query_time= = today --> no results
 
 					if ($datetime != 'UNKNOWN') {
 						$string_datetime = date("d/m/Y", strtotime($datetime));
@@ -77,6 +78,7 @@ class XSMBHelper
 				
 				case 'recommend': 
 					$xsmb = rand (10, 99);
+					// TODO: recommend use frequently
 					$result = 'Tôi đoán đề hôm nay sẽ không phải là ' . $xsmb . '. Hehe';
 					break;
 				default:
