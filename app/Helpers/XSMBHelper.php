@@ -7,7 +7,7 @@ class XSMBHelper
 {
 	public static function answer($query) {
 
-		$result = '';
+		$result = 'Xin lỗi, tôi còn trẻ, tôi chưa thể trả lời những câu hỏi đó được...';
 
 		$client = new Client(['headers' => ['Authorization' => 'Bearer WBXXNZRSGZBH7WLHKOAUGVT6J3PTRQ3Q']]);
 		$response = $client->request('GET', 'https://api.wit.ai/message', ['query' => ['q' => $query]]);
@@ -85,6 +85,43 @@ class XSMBHelper
 			}
 		}
 		return $result;
+	}
+
+	public static function sendAnswer($input) {
+
+		$ACCESS_TOKEN = env("ACCESS_TOKEN", "");
+		
+		$url = 'https://graph.facebook.com/v5.0/me/messages?access_token=' . $ACCESS_TOKEN;
+
+		if (isset($input['entry'][0]['messaging'][0]['sender']['id'])) {
+
+			$sender = $input['entry'][0]['messaging'][0]['sender']['id']; //sender facebook id
+			$message = '';
+			if (array_key_exists('text', $input['entry'][0]['messaging'][0]['message'])) {
+				$message = $input['entry'][0]['messaging'][0]['message']['text']; //text that user sent
+			}
+			$answer = XSMBHelper::answer($message);
+
+			/*initialize curl*/
+			$ch = curl_init($url);
+			/*prepare response*/
+			$jsonData = '{
+			"recipient":{
+				"id":"' . $sender . '"
+				},
+				"message":{
+					"text":"'. $answer .'"
+				}
+			}';
+			/* curl setting to send a json post data */
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+			if (!empty($answer)) {
+			    $result = curl_exec($ch); // user will get the message
+			}
+		}
+
 	}
 }
 ?>

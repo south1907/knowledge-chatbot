@@ -20,6 +20,10 @@ Route::prefix('api')->group(function () {
     Route::prefix('xsmb')->group(function () {
 	    Route::get('', 'XSMBController@index')->name('index');
 	    Route::get('answer', 'XSMBController@answer')->name('answer');
+	    
+	    // webhook facebook
+	    Route::get('webhook', 'XSMBController@verifyWebhook')->name('verifyWebhook');
+	    Route::post('webhook', 'XSMBController@webhook')->name('webhook');
 	});
 
 });
