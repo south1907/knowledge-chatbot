@@ -34,8 +34,8 @@ class XSMBController extends Controller
     public function verifyWebhook (Request $request) {
     	/* validate verify token needed for setting up web hook */ 
     	
-        $VERIFY_TOKEN = env("ACCESS_TOKEN", "");
-    	// print_r( $request);
+        $VERIFY_TOKEN = env("VERIFY_TOKEN", "");
+    	
     	$all = $request->all();
     	info(print_r($all, true));
 

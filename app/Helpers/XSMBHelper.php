@@ -9,7 +9,8 @@ class XSMBHelper
 
 		$result = 'Xin lỗi, tôi còn trẻ, tôi chưa thể trả lời những câu hỏi đó được...';
 
-		$client = new Client(['headers' => ['Authorization' => 'Bearer WBXXNZRSGZBH7WLHKOAUGVT6J3PTRQ3Q']]);
+		$CLIENT_WIT = env("CLIENT_WIT", "");
+		$client = new Client(['headers' => ['Authorization' => 'Bearer ' . $CLIENT_WIT]]);
 		$response = $client->request('GET', 'https://api.wit.ai/message', ['query' => ['q' => $query]]);
 		$body = $response->getBody();
 		$obj = json_decode($body, true);
@@ -104,23 +105,16 @@ class XSMBHelper
 			}
 			$answer = XSMBHelper::answer($message);
 
-			/*initialize curl*/
-			$ch = curl_init($url);
-			/*prepare response*/
-			$jsonData = '{
-			"recipient":{
-				"id":"' . $sender . '"
-				},
-				"message":{
-					"text":"'. $answer .'"
-				}
-			}';
-			/* curl setting to send a json post data */
-			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 			if (!empty($answer)) {
-			    $result = curl_exec($ch); // user will get the message
+				$jsonData = '{
+					"recipient":{
+						"id":"' . $sender . '"
+						},
+						"message":{
+							"text":"'. $answer .'"
+						}
+					}';
+				CurlHelper::send($url, $jsonData);
 			}
 		}
 
