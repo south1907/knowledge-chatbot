@@ -47,6 +47,8 @@ class XSMBHelper
 					}
 					
 					break;
+				case 'query_xsmb':
+
 				case 'query_xsmb_special':
 					$xsmb = rand (10, 99);
 					// TODO: request knowledge really. If time < 6h30 and query_time= = today --> no results
@@ -82,6 +84,13 @@ class XSMBHelper
 					// TODO: recommend use frequently
 					$result = 'Tôi đoán đề hôm nay sẽ không phải là ' . $xsmb . '. Hehe';
 					break;
+
+				case 'help': 
+					$result = "Tôi có thể đáp ứng các chức năng\n";
+					$result .= "+ Tra cứu xsmb: hôm nay đề về bao nhiêu\n";
+					$result .= "+ Kiểm tra xsmb: tôi đánh con 39 có trúng không\n";
+					$result .= "+ Dự đoán xsmb: dự đoán kết quả xsmb hôm nay\n";
+					break;
 				default:
 					$result = 'bạn hỏi khó quá';
 					break;
@@ -105,16 +114,21 @@ class XSMBHelper
 			}
 			$answer = XSMBHelper::answer($message);
 
-			if (!empty($answer)) {
-				$jsonData = '{
-					"recipient":{
-						"id":"' . $sender . '"
-						},
-						"message":{
-							"text":"'. $answer .'"
-						}
-					}';
-				CurlHelper::send($url, $jsonData);
+			// print($answer);
+
+			$answers = explode("\n", $answer);
+			foreach ($answers as $answer) {
+				if (!empty($answer)) {
+					$jsonData = '{
+						"recipient":{
+							"id":"' . $sender . '"
+							},
+							"message":{
+								"text":"'. $answer .'"
+							}
+						}';
+					CurlHelper::send($url, $jsonData);
+				}
 			}
 		}
 
