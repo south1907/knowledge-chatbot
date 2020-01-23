@@ -33,6 +33,13 @@ class XSMBHelper
 				$datetime = $entities['datetime'][0]['value'];
 			}
 
+			if ($datetime != 'UNKNOWN') {
+				$string_datetime = date("d/m/Y", strtotime($datetime));
+			} else {
+				$string_datetime = date("d/m/Y");
+			}
+			$query_time = str_replace('/', '-', $string_datetime);
+
 			switch ($intent) {
 				case 'UNKNOWN':
 					$result = 'bạn hỏi khó quá';
@@ -43,7 +50,20 @@ class XSMBHelper
 					if (array_key_exists('number', $entities)) {
 						$number = $entities['number'][0]['value'];
 
-						$result = 'bạn đánh con ' . $number . ' thì chúc mừng bạn, bạn tạch cmnr';
+						$special = XSMBHelper::queryNumberSpecial($query_time);
+						$xsmb = substr($special, 3);
+
+						if ($xsmb != null) {
+							if ($xsmb == $number) {
+								$result = 'bạn đánh con ' . $number . ' thì chúc mừng bạn, bạn trúng cmnr';
+							} else {
+								$result = 'bạn đánh con ' . $number . ', tạch cmn rồi, đề về ' . $xsmb . ' cơ. Dù sao vẫn chúc mừng bạn, bạn nên bỏ sự nghiệp lô đề đi';
+							}
+						} else {
+							$result = 'xin lỗi, tôi chưa có thông tin kết quả bạn nhé!';
+						}
+						
+
 					} else {
 						$result = 'bạn phải hỏi đánh con bao nhiêu chứ';
 					}
@@ -53,13 +73,6 @@ class XSMBHelper
 
 				case 'query_xsmb_special':
 					// TODO: request knowledge really. If time < 6h30 and query_time= = today --> no results --> DONE
-					
-					if ($datetime != 'UNKNOWN') {
-						$string_datetime = date("d/m/Y", strtotime($datetime));
-					} else {
-						$string_datetime = date("d/m/Y");
-					}
-					$query_time = str_replace('/', '-', $string_datetime);
 
 					$homnay = date("d/m/Y", time());
 					$homqua = date("d/m/Y", time() - 86400 * 1);
@@ -131,20 +144,20 @@ class XSMBHelper
 			// print($answer);
 
 			$answers = explode("\n", $answer);
-			print_r($answers);
-			// foreach ($answers as $answer) {
-			// 	if (!empty($answer)) {
-			// 		$jsonData = '{
-			// 			"recipient":{
-			// 				"id":"' . $sender . '"
-			// 				},
-			// 				"message":{
-			// 					"text":"'. $answer .'"
-			// 				}
-			// 			}';
-			// 		CurlHelper::send($url, $jsonData);
-			// 	}
-			// }
+			// print_r($answers);
+			foreach ($answers as $answer) {
+				if (!empty($answer)) {
+					$jsonData = '{
+						"recipient":{
+							"id":"' . $sender . '"
+							},
+							"message":{
+								"text":"'. $answer .'"
+							}
+						}';
+					CurlHelper::send($url, $jsonData);
+				}
+			}
 		}
 
 	}
@@ -159,7 +172,11 @@ class XSMBHelper
 			$start = $postion + 18;
 			$result = substr($body, $start, 5);
 
-			return $result;
+			if (is_numeric($result)) {
+				return $result;	
+			} else {
+				return null;
+			}
 
 		} else {
 			return null;
