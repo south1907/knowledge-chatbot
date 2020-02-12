@@ -128,11 +128,13 @@ class XSMBHelper
 
 	public static function sendAnswer($input) {
 
-		$ACCESS_TOKEN = env("ACCESS_TOKEN", "");
-		
-		$url = 'https://graph.facebook.com/v5.0/me/messages?access_token=' . $ACCESS_TOKEN;
-
 		if (isset($input['entry'][0]['messaging'][0]['sender']['id'])) {
+
+			$id_page = $input['entry'][0]['id'];
+
+			$ACCESS_TOKEN = env("ACCESS_TOKEN_" . $id_page, "");
+		
+			$url = 'https://graph.facebook.com/v5.0/me/messages?access_token=' . $ACCESS_TOKEN;
 
 			$sender = $input['entry'][0]['messaging'][0]['sender']['id']; //sender facebook id
 			$message = '';
