@@ -4,17 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Helpers\XSMBHelper;
+use App\Helpers\NyHelper;
 
-class XSMBController extends Controller
+class MainController extends Controller
 {
     public function index() {
     	return response()->json([
     		'name'	=>	'api',
-    		'description'	=>	'xsmb'
+    		'description'	=>	'knowledge'
     	]);
     }
 
-    public function answer(Request $request) {
+    public function answerXSMB(Request $request) {
     	if ($request->has('query')){
     		$query = $request->input('query');
 
@@ -29,6 +30,23 @@ class XSMBController extends Controller
 	    		'answer'	=>	'No query'
 	    	]);
     	}
+    }
+
+    public function answerNy(Request $request) {
+        if ($request->has('query')){
+            $query = $request->input('query');
+
+            $answer = NyHelper::answer($query);
+            return response()->json([
+                'status'    =>  'SUCCESS',
+                'answer'    =>  $answer
+            ]);
+        } else {
+            return response()->json([
+                'status'    =>  'FAIL',
+                'answer'    =>  'No query'
+            ]);
+        }
     }
 
     public function verifyWebhook (Request $request) {
@@ -56,7 +74,22 @@ class XSMBController extends Controller
 		/* receive and send messages */
 		$input = $request->all();
 		info(print_r($input, true));
-		XSMBHelper::sendAnswer($input);
+
+        if (isset($input['entry'][0]['id'])) {
+            $id_page = $input['entry'][0]['id'];
+            
+            $NY_PAGE_ID = env("NY_PAGE_ID", "");
+            $XSMB_PAGE_ID = env("XSMB_PAGE_ID", "");
+
+            if ($id_page == $NY_PAGE_ID) {
+                NyHelper::sendAnswer($input);
+            }
+
+            if ($id_page == $XSMB_PAGE_ID) {
+                XSMBHelper::sendAnswer($input);
+            }
+            
+        }
 
         return;
     }

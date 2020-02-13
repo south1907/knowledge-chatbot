@@ -18,12 +18,12 @@ Route::get('/', function () {
 
 Route::prefix('api')->group(function () {
     Route::prefix('xsmb')->group(function () {
-	    Route::get('', 'XSMBController@index')->name('index');
-	    Route::get('answer', 'XSMBController@answer')->name('answer');
+	    Route::get('', 'MainController@index')->name('index');
+	    Route::get('answer/xsmb', 'MainController@answerXSMB')->name('answerXSMB');
 	    
 	    // webhook facebook
-	    Route::get('webhook', 'XSMBController@verifyWebhook')->name('verifyWebhook');
-	    Route::post('webhook', 'XSMBController@webhook')->name('webhook');
+	    Route::get('webhook', 'MainController@verifyWebhook')->name('verifyWebhook');
+	    Route::post('webhook', 'MainController@webhook')->name('webhook');
 	});
 
 });
