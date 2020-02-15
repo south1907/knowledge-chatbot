@@ -365,7 +365,7 @@ class NyHelper extends KnowledgeHelper
 				$result = $query;
 			}
 		} else {
-			$result = 'Có thể nói rõ được không?';
+			$result = 'I love you';
 		}
 
 		return $result;
