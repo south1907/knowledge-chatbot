@@ -78,7 +78,8 @@ Sample post to send user
 ###  pattern 
 
 /(anh|em).*(yêu|thương|thích|mến) (anh|em)/
-
+(anh|em).*(yêu|thương|thích|mến) (anh|em).(?!không|chứ)
+--> don't have không, chứ in last sentence
 
 làm vợ anh nhé
 lấy anh nhé
@@ -101,3 +102,7 @@ chia tay đi
 chúc em ngủ ngon
 anh ngủ đi mai còn đi làm
 chào em
+em có yêu anh không
+em có yêu anh chứ
+em yêu anh
+anh yêu em nhiều lắm
