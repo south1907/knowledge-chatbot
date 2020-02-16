@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 use GuzzleHttp\Client;
+use App\Models\Log;
+use App\Models\User;
 
 abstract class KnowledgeHelper
 {
@@ -24,7 +26,23 @@ abstract class KnowledgeHelper
 			}
 			$answer = static::answer($message);
 
-			// print($answer);
+			// save log
+			$log = new Log;
+			$log->PID = $sender;
+			$log->message = $message;
+			$log->page_id = $id_page;
+			$log->answer = $answer;
+			$log->save();
+
+			// save user
+			$check_exist = User::where(['PID' => $sender, 'page_id' => $id_page])->get();
+
+			if(count($check_exist) == 0) {
+				$user = new User;
+				$user->PID = $sender;
+				$user->page_id = $id_page;
+				$user->save();
+			}
 
 			$answers = explode("\n", $answer);
 			// print_r($answers);
