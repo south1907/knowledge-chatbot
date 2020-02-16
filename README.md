@@ -75,3 +75,29 @@ Sample post to send user
 }
 ```
 
+###  pattern 
+
+/(anh|em).*(yêu|thương|thích|mến) (anh|em)/
+
+
+làm vợ anh nhé
+lấy anh nhé
+lấy anh đi
+anh muốn nói điều này quan trọng với em
+anh bảo cái này
+biến đi
+cút đi
+biến mẹ mày đi
+tạm biệt nhé
+bye
+mai gặp lại
+thằng chó
+vì sao chứ
+có lẽ  mình không hợp nhau
+là mình không hợp nhau
+quên em đi anh
+quên anh đi em
+chia tay đi
+chúc em ngủ ngon
+anh ngủ đi mai còn đi làm
+chào em

@@ -17,9 +17,10 @@ Route::get('/', function () {
 
 
 Route::prefix('api')->group(function () {
-    Route::prefix('xsmb')->group(function () {
+    Route::prefix('v1')->group(function () {
 	    Route::get('', 'MainController@index')->name('index');
 	    Route::get('answer/xsmb', 'MainController@answerXSMB')->name('answerXSMB');
+	    Route::get('answer/ny', 'MainController@answerNy')->name('answerNy');
 	    
 	    // webhook facebook
 	    Route::get('webhook', 'MainController@verifyWebhook')->name('verifyWebhook');
