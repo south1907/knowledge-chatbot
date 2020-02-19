@@ -1,0 +1,9 @@
+name	patterns	sentences	answers	gender	positive
+love	(anh|em).*(yêu|thương|thích|mến) (anh|em)$	anh cực kỳ yêu em luôn ý	Em cũng vậy, em cũng yêu em :p	1	1
+	(anh|em).*(yêu|thương|thích|mến) (anh|em) (?!không|chứ)	anh thương em nhất luôn	Em yêu anh <3	1	1
+		anh thề anh yêu em mãi mãi	Em không yêu anh đâu	1	0
+			Đừng làm phiền em nữa	1	0
+ask_love	(làm).*(người yêu|vợ|chồng) (anh|em)	yêu anh đi	Ok, em đồng ý	1	1
+	(lấy|yêu) (anh|em).*(nhé|nha|nhá|đi|k|không)	đến với anh này	ừ, em yêu anh	1	1
+		mình cưới nha em	Méo nhé :))	1	0
+			Đm, đéo	1	0

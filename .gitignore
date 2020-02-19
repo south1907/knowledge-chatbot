@@ -12,3 +12,5 @@ npm-debug.log
 yarn-error.log
 .htaccess
 .idea
+/python/files/data.csv
+/python/files/config.json
