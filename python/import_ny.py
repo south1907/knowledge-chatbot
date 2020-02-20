@@ -20,12 +20,36 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
+# function insert intent
+def insert_intent(intent, patterns, sentences, answers):
+	if intent not in intents_indb:
+		string_patterns = ";".join(patterns)
+		string_sentences = ";".join(sentences)
+
+		sql_intent = "INSERT INTO intents (name, patterns, sentences) VALUES (%s, %s, %s)"
+		val_intent = (intent, string_patterns, string_sentences)
+		mycursor.execute(sql_intent, val_intent)
+		mydb.commit()
+
+		id_intent = mycursor.lastrowid
+
+		sql_answer = "INSERT INTO answers (message, intent_id, gender, positive) VALUES (%s, %s, %s, %s)"
+		val_answers = []
+
+		for ans in answers:
+
+			temp_answer = (ans['answer'], id_intent, ans['gender'], ans['positive'])
+			val_answers.append(temp_answer)
+
+		mycursor.executemany(sql_answer, val_answers)
+		mydb.commit()
+		print(mycursor.rowcount, "answers was inserted")
+	else:
+		print('intent: ' + intent + ' was exist.')
+# get list current intent in system
 mycursor.execute("SELECT name FROM intents")
 intents_indb = mycursor.fetchall()
 intents_indb = [row[0] for row in intents_indb]
-
-for item in intents_indb:
-	print(item)
 
 current_intent = ''
 patterns = []
@@ -44,16 +68,13 @@ for row in data:
 		if row_intent != '':
 			# finish current_intent and insert to db if current_intent != ''
 			if current_intent != '':
-				print(patterns)
-				print(answers)
-				print(sentences)
+
+				insert_intent(current_intent, patterns, sentences, answers)
 
 				# set null list
 				patterns = []
 				answers = []
 				sentences = []
-
-				#TODO: insert to db
 
 			current_intent = row_intent
 		
@@ -74,7 +95,5 @@ for row in data:
 			}
 			answers.append(temp)
 
-#TODO: insert last intent
-print(patterns)
-print(answers)
-print(sentences)
+#TODO: insert last intent -> DONE
+insert_intent(current_intent, patterns, sentences, answers)
