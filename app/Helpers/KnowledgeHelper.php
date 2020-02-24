@@ -4,6 +4,10 @@ namespace App\Helpers;
 use GuzzleHttp\Client;
 use App\Models\Log;
 use App\Models\User;
+use App\Models\Fb\FbAnswer;
+use App\Models\Fb\TextMessage;
+use App\Models\Fb\ButtonMessage;
+use App\Models\Fb\ButtonTemplate;
 
 abstract class KnowledgeHelper
 {
@@ -48,14 +52,10 @@ abstract class KnowledgeHelper
 			// print_r($answers);
 			foreach ($answers as $answer) {
 				if (!empty($answer)) {
-					$jsonData = '{
-						"recipient":{
-							"id":"' . $sender . '"
-							},
-							"message":{
-								"text":"'. $answer .'"
-							}
-						}';
+					$objData = new FbAnswer($sender);
+					$objData->setTextMessage($answer);
+					$jsonData = json_encode($objData);
+
 					CurlHelper::send($url, $jsonData);
 				}
 			}

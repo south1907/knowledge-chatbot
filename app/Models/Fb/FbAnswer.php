@@ -12,7 +12,7 @@ class FbAnswer
 		$this->recipient = ['id' => $recipient];
 	}
 	public function setTextMessage($text) {
-		$this->message = $text;
+		$this->message['text'] = $text;
 	}
 
 	public function setButtonMessage($button) {
