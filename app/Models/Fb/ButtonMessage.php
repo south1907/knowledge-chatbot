@@ -4,14 +4,14 @@ namespace App\Models\Fb;
 
 class ButtonMessage
 {
-	public $templateType;
+	public $template_type;
 
 	public $text;
 
 	public $buttons;
 
-	public function __construct($templateType, $text, $buttons) {
-		$this->templateType = $templateType;
+	public function __construct($template_type, $text, $buttons) {
+		$this->template_type = $template_type;
 		$this->text = $text;
 		$this->buttons = $buttons;
 	}
