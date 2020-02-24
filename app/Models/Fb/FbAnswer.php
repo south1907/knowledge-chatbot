@@ -16,6 +16,11 @@ class FbAnswer
 	}
 
 	public function setButtonMessage($button) {
-		$this->message = ['payload' => $button];
+		$this->message = [
+			'attachment'	=>	[
+				'type'		=>	'template',
+				'payload' 	=>	$button
+			]
+		];
 	}
 }

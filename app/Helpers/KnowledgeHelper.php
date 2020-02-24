@@ -11,7 +11,7 @@ use App\Models\Fb\ButtonTemplate;
 
 abstract class KnowledgeHelper
 {
-	abstract public static function answer($query);
+	abstract public static function answer($query, $page_id);
 
 	public static function sendAnswer($input) {
 
@@ -28,14 +28,14 @@ abstract class KnowledgeHelper
 			if (array_key_exists('text', $input['entry'][0]['messaging'][0]['message'])) {
 				$message = $input['entry'][0]['messaging'][0]['message']['text']; //text that user sent
 			}
-			$answer = static::answer($message);
+			$answer = static::answer($message, $id_page);
 
 			// save log
 			$log = new Log;
 			$log->PID = $sender;
 			$log->message = $message;
 			$log->page_id = $id_page;
-			$log->answer = $answer;
+			$log->answer_id = $answer['id'];
 			$log->save();
 
 			// save user
@@ -48,17 +48,35 @@ abstract class KnowledgeHelper
 				$user->save();
 			}
 
-			$answers = explode("\n", $answer);
-			// print_r($answers);
-			foreach ($answers as $answer) {
-				if (!empty($answer)) {
-					$objData = new FbAnswer($sender);
-					$objData->setTextMessage($answer);
-					$jsonData = json_encode($objData);
+			$objData = new FbAnswer($sender);
+			$jsonData = "";
 
-					CurlHelper::send($url, $jsonData);
+			$result['type'] = $answer['type'];
+
+			if ($answer['type'] == 'text') {
+				$result['message'] = $answer['message'];
+			}
+
+			if ($answer['type'] == 'text') {
+				$answers = explode("\n", $answer['message']);
+
+				foreach ($answers as $ans) {
+					if (!empty($ans)) {
+						$objData->setTextMessage($ans);
+						$jsonData = json_encode($objData);
+					}
 				}
 			}
+
+			if ($answer['type'] == 'button') {
+				$btn = new ButtonMessage('button', $answer['message'], json_decode($answer['buttons']));
+				$objData->setButtonMessage($btn);
+				$jsonData = json_encode($objData);
+			}
+
+			CurlHelper::send($url, $jsonData);
+
+			
 		}
 	}
 }
