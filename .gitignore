@@ -14,3 +14,4 @@ yarn-error.log
 .idea
 /python/files/data.csv
 /python/files/config.json
+/python/crawl_data/__pycache__

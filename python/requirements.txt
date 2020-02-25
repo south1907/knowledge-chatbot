@@ -1,1 +1,3 @@
-requirements.txt
+js2py
+mysql
+bs4
