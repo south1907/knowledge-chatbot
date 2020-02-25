@@ -19,8 +19,9 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-lesson = 1
-for lesson in range(1, 32):
+start = 1
+end = 33
+for lesson in range(start, end):
 	print(lesson)
 	language = "JA"
 
@@ -34,57 +35,63 @@ for lesson in range(1, 32):
 	words = soup.findAll('table')
 	synonyms = soup.findAll('div', {"class": "khungngoai1"})
 
-	val_words = []
-	for i in range(0, len(words)):
+	# if same same then process
+	if len(words) == len(synonyms):
 
-		word = words[i]
-		synonym = synonyms[i]
+		val_words = []
+		for i in range(0, len(words)):
 
-		main_word = word.find('span', {'class': 'hantu'}).getText()
+			word = words[i]
+			synonym = synonyms[i]
 
-		name_word = word.find('center').find('font').getText()
+			main_word = word.find('span', {'class': 'hantu'}).getText()
 
-		mean_word = word.find('td', {'width': '200px'}).find('font', {'size': 4}).getText().strip()
+			name_word = word.find('center').find('font').getText()
 
-		pronounce = word.find('td', {'width': '200px'}).find('font', {'size': 5}).getText().strip()
+			mean_word = word.find('td', {'width': '200px'}).find('font', {'size': 4}).getText().strip()
 
-		image = 'https://www.vnjpclub.com' + word.find('img')['src']
+			pronounce = word.find('td', {'width': '200px'}).find('font', {'size': 5}).getText().strip()
 
-		tip_memory = word.findAll('td')[3].findAll('font')[1].getText()
+			image = 'https://www.vnjpclub.com' + word.find('img')['src']
 
-		word_synonyms = synonym.findAll('ruby')
-		list_syn = []
-		for j in range(0, len(word_synonyms)):
-			word_syn = word_synonyms[j]
+			tip_memory = word.findAll('td')[3].findAll('font')[1].getText()
 
-			name_syn = word_syn.getText()
-			str_tag_word_syn = str(word_syn)
-			index_tag = data.find(str_tag_word_syn)
-			end_tag = data.find('<br />', index_tag)
-
-			mean_syn = ''
-			if data[index_tag + len(str_tag_word_syn): index_tag + len(str_tag_word_syn) + 1] == ' ':
-				mean_syn = data[index_tag + len(str_tag_word_syn) + 1:end_tag].replace(':', '').strip()
-
-			elif data[index_tag + len(str_tag_word_syn): index_tag + len(str_tag_word_syn) + 1] == '<':
-				j += 1
+			word_synonyms = synonym.findAll('ruby')
+			list_syn = []
+			for j in range(0, len(word_synonyms)):
 				word_syn = word_synonyms[j]
-				name_syn += " " + word_syn.getText()
+
+				name_syn = word_syn.getText()
 				str_tag_word_syn = str(word_syn)
 				index_tag = data.find(str_tag_word_syn)
+				end_tag = data.find('<br />', index_tag)
 
-				mean_syn = data[index_tag + len(str_tag_word_syn) + 1:end_tag].replace(':', '').strip()
+				mean_syn = ''
+				if data[index_tag + len(str_tag_word_syn): index_tag + len(str_tag_word_syn) + 1] == ' ':
+					mean_syn = data[index_tag + len(str_tag_word_syn) + 1:end_tag].replace(':', '').strip()
 
-			if mean_syn != '':
-				row_syn = name_syn + ': ' + mean_syn
-				list_syn.append(row_syn)
-		
-		addition = ";".join(list_syn)
-		temp_word = (main_word, name_word, mean_word, tip_memory, pronounce, image, addition, lesson, language)
-		val_words.append(temp_word)
+				elif data[index_tag + len(str_tag_word_syn): index_tag + len(str_tag_word_syn) + 1] == '<':
+					j += 1
+					word_syn = word_synonyms[j]
+					name_syn += " " + word_syn.getText()
+					str_tag_word_syn = str(word_syn)
+					index_tag = data.find(str_tag_word_syn)
 
-	# insert
-	sql_words = "INSERT INTO words (word, name_word, means, tip_memory, pronounce, image, addition, lesson, language) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-	mycursor.executemany(sql_words, val_words)
-	mydb.commit()
-	print(mycursor.rowcount, "answers was inserted")
+					mean_syn = data[index_tag + len(str_tag_word_syn) + 1:end_tag].replace(':', '').strip()
+
+				if mean_syn != '':
+					row_syn = name_syn + ': ' + mean_syn
+					list_syn.append(row_syn)
+			
+			addition = ";".join(list_syn)
+			temp_word = (main_word, name_word, mean_word, tip_memory, pronounce, image, addition, lesson, language)
+			val_words.append(temp_word)
+
+		# insert
+		sql_words = "INSERT INTO words (word, name_word, means, tip_memory, pronounce, image, addition, lesson, language) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+		mycursor.executemany(sql_words, val_words)
+		mydb.commit()
+		print(mycursor.rowcount, "answers was inserted")
+
+	else:
+		print('not match')
