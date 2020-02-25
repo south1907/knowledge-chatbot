@@ -5,12 +5,15 @@ use GuzzleHttp\Client;
 
 class XSMBHelper extends KnowledgeHelper
 {
-	public static function answer($query) {
+	public static function answer($query, $page_id) {
 
 		date_default_timezone_set('Asia/Ho_Chi_Minh');
 
-		$result = 'Xin lỗi, tôi còn trẻ, tôi chưa thể trả lời những câu hỏi đó được...';
-
+		$result = [
+			'type'		=>	'text',
+			'message'	=> 'Xin lỗi, tôi còn trẻ, tôi chưa thể trả lời những câu hỏi đó được...'
+		];
+		
 		$CLIENT_WIT = env("CLIENT_WIT", "");
 		$client = new Client(['headers' => ['Authorization' => 'Bearer ' . $CLIENT_WIT]]);
 		$response = $client->request('GET', 'https://api.wit.ai/message', ['query' => ['q' => $query]]);
@@ -123,7 +126,7 @@ class XSMBHelper extends KnowledgeHelper
 					break;
 			}
 		}
-		return $result;
+		return ['type' => 'text', 'message' => $result];
 	}
 
 	private static function queryNumberSpecial($query_time) {

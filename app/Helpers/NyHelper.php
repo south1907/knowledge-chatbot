@@ -3,15 +3,23 @@
 namespace App\Helpers;
 use GuzzleHttp\Client;
 use App\Models\Intent;
+use App\Models\Fb\FbAnswer;
+use App\Models\Fb\TextMessage;
+use App\Models\Fb\ButtonMessage;
+use App\Models\Fb\ButtonTemplate;
 
 class NyHelper extends KnowledgeHelper
 {
-	public static function answer($query) {
+	public static function answer($query, $page_id) {
 		$query = strtolower($query);
 
-		$result = 'I love you';
+		$result = [
+			'id'		=> 	null,
+			'type'		=>	'text',
+			'message'	=> 'I love you'
+		];
 
-		$intents = Intent::with('answers')->get();
+		$intents = Intent::with('answers')->where('page_id', $page_id)->get();
 		
 		$current_intent = null;
 
@@ -52,9 +60,16 @@ class NyHelper extends KnowledgeHelper
 
 		if (!is_null($current_intent)) {
 			$answers = $current_intent->answers->toArray();
-			$rand = array_rand($answers);
 
-			$result = $answers[$rand]['message'];
+			$answers = array_filter($answers, function($item) use (&$page_id)  {
+			  	return $item['page_id'] == $page_id;
+			});
+
+			if (count($answers) > 0) {
+				$rand = array_rand($answers);
+
+				$result = $answers[$rand];
+			}
 		}
 
 		return $result;

@@ -5,7 +5,7 @@ use GuzzleHttp\Client;
 
 class NyWitHelper extends KnowledgeHelper
 {
-	public static function answer($query) {
+	public static function answer($query, $page_id) {
 
 		$CLIENT_WIT = env("CLIENT_WIT_NY", "");
 		$client = new Client(['headers' => ['Authorization' => 'Bearer ' . $CLIENT_WIT]]);
@@ -365,10 +365,13 @@ class NyWitHelper extends KnowledgeHelper
 				$result = $query;
 			}
 		} else {
-			$result = 'I love you';
+			$result = [
+				'type'		=>	'text',
+				'message'	=> 'I love you'
+			];
 		}
 
-		return $result;
+		return ['type' => 'text', 'message' => $result];
 
 	}
 }

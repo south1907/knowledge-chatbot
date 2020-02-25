@@ -106,3 +106,63 @@ em có yêu anh không
 em có yêu anh chứ
 em yêu anh
 anh yêu em nhiều lắm
+
+
+==============
+
+NOTE: 
+
+remove null value json encode to post API
+```
+$json_str = json_encode($obj);
+$json_str = preg_replace('/,\s*"[^"]+":null|"[^"]+":null,?/', '', $json_str);
+print_r($json_str);
+```
+
+==============
+
+TODO
+
+process payload
+
+```
+(
+    [object] => page
+    [entry] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 100161904867171
+                    [time] => 1582570192518
+                    [messaging] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [sender] => Array
+                                        (
+                                            [id] => 2756500614416883
+                                        )
+
+                                    [recipient] => Array
+                                        (
+                                            [id] => 100161904867171
+                                        )
+
+                                    [timestamp] => 1582570190818
+                                    [postback] => Array
+                                        (
+                                            [title] => title 2 of button
+                                            [payload] => STRING_SENT_TO_WEBHOOK2
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+        )
+
+)
+
+```
