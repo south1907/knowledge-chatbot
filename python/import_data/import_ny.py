@@ -1,10 +1,10 @@
 import json
 import mysql.connector
 
-with open('files/config.json') as f:
+with open('../files/config.json') as f:
 	config = json.loads(f.read())
 	f.close()
-with open('files/data.csv') as f:
+with open('../files/data.csv') as f:
 	data = f.read().split("\n")
 	del data[0]
 	f.close()
