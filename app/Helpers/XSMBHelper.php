@@ -5,9 +5,7 @@ use GuzzleHttp\Client;
 
 class XSMBHelper extends KnowledgeHelper
 {
-	public static function answer($query, $page_id) {
-
-		date_default_timezone_set('Asia/Ho_Chi_Minh');
+	public static function answer($query, $page_id, $PID) {
 
 		$result = [
 			'type'		=>	'text',

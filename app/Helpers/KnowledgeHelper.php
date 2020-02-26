@@ -11,9 +11,10 @@ use App\Models\Fb\ButtonTemplate;
 
 abstract class KnowledgeHelper
 {
-	abstract public static function answer($query, $page_id);
+	abstract public static function answer($query, $page_id, $PID);
 
 	public static function sendAnswer($input) {
+		date_default_timezone_set('Asia/Ho_Chi_Minh');
 
 		$messaging = $input['entry'][0]['messaging'][0];
 		if (isset($messaging['sender']['id'])) {
@@ -50,7 +51,7 @@ abstract class KnowledgeHelper
 				];
 			}
 
-			$answer = static::answer($message, $id_page);
+			$answer = static::answer($message, $id_page, $sender);
 
 			// save log
 			$log = new Log;
@@ -73,12 +74,6 @@ abstract class KnowledgeHelper
 			$objData = new FbAnswer($sender);
 			$jsonData = "";
 
-			$result['type'] = $answer['type'];
-
-			if ($answer['type'] == 'text') {
-				$result['message'] = $answer['message'];
-			}
-
 			if ($answer['type'] == 'text') {
 				$answers = explode("\n", $answer['message']);
 
@@ -86,6 +81,8 @@ abstract class KnowledgeHelper
 					if (!empty($ans)) {
 						$objData->setTextMessage($ans);
 						$jsonData = json_encode($objData);
+
+						CurlHelper::send($url, $jsonData);
 					}
 				}
 			}
@@ -94,11 +91,8 @@ abstract class KnowledgeHelper
 				$btn = new ButtonMessage('button', $answer['message'], json_decode($answer['buttons']));
 				$objData->setButtonMessage($btn);
 				$jsonData = json_encode($objData);
+				CurlHelper::send($url, $jsonData);
 			}
-
-			CurlHelper::send($url, $jsonData);
-
-			
 		}
 	}
 }

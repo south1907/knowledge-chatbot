@@ -164,3 +164,49 @@ $json_str = json_encode($obj);
 $json_str = preg_replace('/,\s*"[^"]+":null|"[^"]+":null,?/', '', $json_str);
 print_r($json_str);
 ```
+
+Structure Postback of intent:
+```
+INTENT::learn_word|CUSTOM
+INTENT::learn_word|SYSTEM
+```
+
+
+Intent learn Japanese: learn_word
+List state (addition)
+```
+CUSTOM
+SYSTEM
+ERROR_FORMAT
+NOT_JAPANESE
+SUCCESS
+END
+```
+
+```
+[
+	{
+		"type": "postback",
+		"title": "Nhập dữ liệu",
+		"payload": "INTENT::learn_word|CUSTOM"
+	},
+	{
+		"type": "postback",
+		"title": "Học từ trong hệ thống",
+		"payload": "INTENT::learn_word|SYSTEM"
+	}
+]
+
+[
+	{
+		"type": "postback",
+		"title": "Nhập tiếp",
+		"payload": "INTENT::learn_word|CUSTOM"
+	},
+	{
+		"type": "postback",
+		"title": "Dừng",
+		"payload": "INTENT::learn_word|END"
+	}
+]
+```
