@@ -27,7 +27,7 @@ class NyHelper extends KnowledgeHelper
 
 		if (array_key_exists('type', $query)) {
 			if ($query['type'] == 'text') {
-				$message = strtolower($query['content']);
+				$message = mb_strtolower($query['content']);
 
 				$intents = Intent::with('answers')->where('page_id', $page_id)->get();
 				
@@ -78,6 +78,8 @@ class NyHelper extends KnowledgeHelper
 						$rand = array_rand($answers);
 
 						$result = $answers[$rand];
+
+						static::updateSession($session, $PID, $current_intent->name, NULL, $page_id);
 					}
 				} else {
 					if ($session && $session->intent_name == 'learn_word' && $session->addition == 'CUSTOM') {
