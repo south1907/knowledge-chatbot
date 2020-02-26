@@ -149,6 +149,7 @@ class NyHelper extends KnowledgeHelper
 
 	public static function updateSession($session, $PID, $intent_name, $addition) {
 
+		// TODO: add expired_at adn where condition
 		if ($session) {
 			$session->intent_name = $intent_name;
 			$session->addition = $addition;
