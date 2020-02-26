@@ -15,7 +15,8 @@ abstract class KnowledgeHelper
 
 	public static function sendAnswer($input) {
 
-		if (isset($input['entry'][0]['messaging'][0]['sender']['id'])) {
+		$messaging = $input['entry'][0]['messaging'][0];
+		if (isset($messaging['sender']['id'])) {
 
 			$id_page = $input['entry'][0]['id'];
 
@@ -23,17 +24,38 @@ abstract class KnowledgeHelper
 		
 			$url = 'https://graph.facebook.com/v5.0/me/messages?access_token=' . $ACCESS_TOKEN;
 
-			$sender = $input['entry'][0]['messaging'][0]['sender']['id']; //sender facebook id
-			$message = '';
-			if (array_key_exists('text', $input['entry'][0]['messaging'][0]['message'])) {
-				$message = $input['entry'][0]['messaging'][0]['message']['text']; //text that user sent
+			$sender = $messaging['sender']['id']; //sender facebook id
+			$message = [];
+
+			// normal message
+			if (array_key_exists('message', $messaging)) {
+
+				if (array_key_exists('text', $messaging['message'])) {
+					$message = [
+						'type'	=>	'text',
+						'content'	=>	$messaging['message']['text'] //text that user sent
+					];
+				} else if ((array_key_exists('sticker_id', $messaging['message']))) {
+					// sticker (like)
+					$message = [
+						'type'	=>	'icon',
+						'content'	=>	$messaging['message']['attachments']['payload']['url'] //text that user sent
+					];
+				}
+			} else if (array_key_exists('postback', $messaging)) {
+				// postback message
+				$message = [
+					'type'	=>	'postback',
+					'content'	=>	$messaging['postback']['payload'] //text that user sent
+				];
 			}
+
 			$answer = static::answer($message, $id_page);
 
 			// save log
 			$log = new Log;
 			$log->PID = $sender;
-			$log->message = $message;
+			$log->message = json_encode($message);
 			$log->page_id = $id_page;
 			$log->answer_id = $answer['id'];
 			$log->save();

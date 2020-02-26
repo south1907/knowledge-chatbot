@@ -11,13 +11,18 @@ use App\Models\Fb\ButtonTemplate;
 class NyHelper extends KnowledgeHelper
 {
 	public static function answer($query, $page_id) {
-		$query = strtolower($query);
 
 		$result = [
 			'id'		=> 	null,
 			'type'		=>	'text',
 			'message'	=> 'I love you'
 		];
+
+		if (array_key_exists('type', $query) && $query['type'] == 'text') {
+			$query = strtolower($query['content']);
+		} else {
+			return $result;
+		}
 
 		$intents = Intent::with('answers')->where('page_id', $page_id)->get();
 		
