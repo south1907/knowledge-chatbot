@@ -202,7 +202,28 @@ class NyHelper extends KnowledgeHelper
 						$intent_addition = $intent_split[1];
 					}
 
-					$result[] = static::getAnswerDb($intent_name, $intent_addition, $page_id);
+					$answerDb = static::getAnswerDb($intent_name, $intent_addition, $page_id);
+					if ($answerDb) {
+						$result[] = $answerDb;
+					}
+					// process confirm
+					if (strpos($intent_string, 'learn_word|confirm_word') !== false) {
+						$split_confirm = explode(":", $intent_string);
+						$yes_or_no = $split_confirm[1];
+						$id_learn = $split_confirm[2];
+
+						$learn_confirm = Learn::find($id_learn);
+
+						if ($yes_or_no == 'yes') {
+							$learn_confirm->status = 'LEARNING';
+						} else {
+							$learn_confirm->status = 'CANCEL';
+						}
+
+						$learn_confirm->save();
+
+						$intent_string = 'learn_word|CHOICE_WORD';
+					}
 
 					if ($intent_string == 'learn_word|CHOICE_WORD') {
 						$learn_word_confirm = Learn::where([
@@ -210,45 +231,58 @@ class NyHelper extends KnowledgeHelper
 							'lesson'	=>	$data_slot['lesson'],
 							'PID'		=>	$PID
 						])->with('word')->first();
-						$word_confirm = $learn_word_confirm->word;
 
-						$message_word = $word_confirm->word;
-						$message_word .= ' - ' . $word_confirm->name_word;
-						$message_word .= ' - ' . $word_confirm->means;
-						$message_word .= "\nPhát âm: " . $word_confirm->pronounce;
-						$message_word .= "\nMẹo nhớ: " . $word_confirm->tip_memory;
-						$message_word .= "\nTừ: " . $word_confirm->addition;
-						$result[] = [
-							'id'	=>	null,
-							'type'	=>	'text',
-							'message'	=>	$message_word
-						];
+						if ($learn_word_confirm) {
+							$word_confirm = $learn_word_confirm->word;
 
-						// confirm payload 
-						$result[] = [
-							'id'	=>	null,
-							'type'	=>	'button',
-							'message'	=>	'Học từ này chứ?',
-							'buttons' => json_encode([
-								[
-									"type"		=> "postback",
-									"title"		=> "Có",
-									"payload"	=> "INTENT::learn_word|confirm_word::yes:" . $learn_word_confirm->id
-								],
-								[
-									"type"		=> "postback",
-									"title"		=> "Không",
-									"payload"	=> "INTENT::learn_word|confirm_word::no:" . $learn_word_confirm->id
-								]
-							])
-						];
+							$message_word = $word_confirm->word;
+							$message_word .= ' - ' . $word_confirm->name_word;
+							$message_word .= ' - ' . $word_confirm->means;
+							$message_word .= "\nPhát âm: " . $word_confirm->pronounce;
+							$message_word .= "\nMẹo nhớ: " . $word_confirm->tip_memory;
+							$message_word .= "\nTừ: " . $word_confirm->addition;
+							$result[] = [
+								'id'	=>	null,
+								'type'	=>	'text',
+								'message'	=>	$message_word
+							];
+
+							// confirm payload 
+							$result[] = [
+								'id'	=>	null,
+								'type'	=>	'button',
+								'message'	=>	'Học từ này chứ?',
+								'buttons' => json_encode([
+									[
+										"type"		=> "postback",
+										"title"		=> "Có",
+										"payload"	=> "INTENT::learn_word|confirm_word:yes:" . $learn_word_confirm->id
+									],
+									[
+										"type"		=> "postback",
+										"title"		=> "Không",
+										"payload"	=> "INTENT::learn_word|confirm_word:no:" . $learn_word_confirm->id
+									]
+								])
+							];
+						} else {
+							$intent_string = 'learn_word|END';
+							$answerDb = static::getAnswerDb('learn_word', 'END', $page_id);
+							if ($answerDb) {
+								$result[] = $answerDb;
+							}
+						}
 					}
 
 					if ($intent_string == 'learn_word|END') {
 						$session->expired_at = date('Y-m-d H:i:s');
 						$session->save();
 					} else {
-						static::updateSession($session, $PID, $intent_name, $intent_addition, $result[0]['slot']);
+						$slot = null;
+						if (array_key_exists('slot', $result[0])) {
+							$slot = $result[0]['slot'];
+						}
+						static::updateSession($session, $PID, $intent_name, $intent_addition, $slot);
 					}
 				}
 			}
