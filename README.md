@@ -209,4 +209,18 @@ END
 		"payload": "INTENT::learn_word|END"
 	}
 ]
+
+TYPE_IMPORT_WORD
+[
+	{
+		"type": "postback",
+		"title": "Học toàn bộ",
+		"payload": "INTENT::learn_word|ALL_WORD"
+	},
+	{
+		"type": "postback",
+		"title": "Chọn từ muốn học",
+		"payload": "INTENT::learn_word|CHOICE_WORD"
+	}
+]
 ```

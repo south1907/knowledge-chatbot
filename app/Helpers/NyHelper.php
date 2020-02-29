@@ -6,6 +6,7 @@ use App\Models\Intent;
 use App\Models\Answer;
 use App\Models\Session;
 use App\Models\Word;
+use App\Models\Learn;
 use App\Models\Fb\FbAnswer;
 use App\Models\Fb\TextMessage;
 use App\Models\Fb\ButtonMessage;
@@ -15,11 +16,7 @@ class NyHelper extends KnowledgeHelper
 {
 	public static function answer($query, $page_id, $PID) {
 
-		$result = [
-			'id'		=> 	null,
-			'type'		=>	'text',
-			'message'	=> 'I love you'
-		];
+		$result = [];
 
 		$current_intent = null;
 
@@ -77,7 +74,7 @@ class NyHelper extends KnowledgeHelper
 					if (count($answers) > 0) {
 						$rand = array_rand($answers);
 
-						$result = $answers[$rand];
+						$result[] = $answers[$rand];
 
 						static::updateSession($session, $PID, $current_intent->name, NULL, $page_id);
 					}
@@ -90,6 +87,8 @@ class NyHelper extends KnowledgeHelper
 						if (strpos($word, ';') !== false && count($word_split) > 2) {
 
 							if (static::isJapanese($word_split[0])) {
+
+								// TODO: check word if exists
 								$newWord = new Word;
 								$newWord->word = trim($word_split[0]);
 								$newWord->name_word = trim($word_split[1]);
@@ -101,27 +100,99 @@ class NyHelper extends KnowledgeHelper
 								$newWord->save();
 
 								$addition = 'SUCCESS';
-								$result = static::getAnswerDb($session->intent_name, $addition, $page_id);
+								$result[] = static::getAnswerDb($session->intent_name, $addition, $page_id);
 							} else {
 								$addition = 'NOT_JAPANESE';
-								$result = static::getAnswerDb($session->intent_name, $addition, $page_id);
+								$result[] = static::getAnswerDb($session->intent_name, $addition, $page_id);
 							}
 						} else {
 							$addition = 'ERROR_FORMAT';
-							$result = static::getAnswerDb($session->intent_name, $addition, $page_id);
+							$result[] = static::getAnswerDb($session->intent_name, $addition, $page_id);
 						}
 					}
 
 					// TODO Process with SYSTEM, need find lesson --> create slot
+					if ($session && $session->intent_name == 'learn_word' && ($session->addition == 'SYSTEM' || $session->addition ==  'WAIT_LESSON')) {
+
+						$sentence = $query['content'];
+						$find = 
+						$re = '/(bài|bài số) (\d)/m';
+
+						preg_match_all($re, $sentence, $matches_lesson, PREG_SET_ORDER, 0);
+
+						$number_lesson = 0;
+						if (count($matches_lesson)) {
+							$number_lesson = $matches_lesson[0][2];
+						}
+
+						if($number_lesson) {
+							// init word to learn
+							$words = Word::where([
+								'lesson'	=>	$number_lesson,
+								'language'	=>	'JA'
+							])->get();
+
+							// delete all status NEW of PID
+							$learn_news = Learn::where([
+								'status'	=>	'NEW',
+								'lesson'	=>	$number_lesson,
+								'PID'		=>	$PID
+							])->delete();
+
+							foreach ($words as $w) {
+								$learn = new Learn;
+								$learn->PID = $PID;
+								$learn->word_id = $w->id;
+								$learn->page_id = $page_id;
+								$learn->lesson = $number_lesson;
+								$learn->status = 'NEW';
+								$learn->save();
+							}
+
+							$addition = 'TYPE_IMPORT_WORD';
+							$slot = $session->slot . ':' . $number_lesson;
+							$result[] = static::getAnswerDb($session->intent_name, $addition, $page_id);
+							static::updateSession($session, $PID, $session->intent_name, $addition, $slot);
+
+						} else {
+							$addition = 'WAIT_LESSON';
+							$result[] = static::getAnswerDb($session->intent_name, $addition, $page_id);
+						}
+					}
+
 				}
 			}
 
 			// process postback
-			if ($query['type'] == 'postback') {
+			if ($query['type'] == 'postback' && $session) {
 				$payload = $query['content'];
 
 				if (strpos($payload, 'INTENT::') !== false) {
 					$intent_string = explode("::", $payload)[1];
+
+					$session_slot = explode(';', $session->slot);
+					$data_slot = [];
+					foreach ($session_slot as $slot) {
+						$split_slot = explode(':', $slot);
+						if (count($split_slot) > 1) {
+							$data_slot[$split_slot[0]] = $split_slot[1];
+						}
+					}
+
+					if ($intent_string == 'learn_word|ALL_WORD') {
+
+						if (array_key_exists('lesson', $data_slot)) {
+							// update all word of PID, lesson, status = NEW
+							Learn::where([
+								'status'	=>	'NEW',
+								'lesson'	=>	$data_slot['lesson'],
+								'PID'		=>	$PID
+							])->update(['status' => 'LEARNING']);
+
+							$intent_string = 'learn_word|END';
+						}
+					}
+
 					$intent_split = explode("|", $intent_string);
 
 					$intent_name = $intent_split[0];
@@ -131,38 +202,88 @@ class NyHelper extends KnowledgeHelper
 						$intent_addition = $intent_split[1];
 					}
 
-					// end session
+					$result[] = static::getAnswerDb($intent_name, $intent_addition, $page_id);
+
+					if ($intent_string == 'learn_word|CHOICE_WORD') {
+						$learn_word_confirm = Learn::where([
+							'status'	=>	'NEW',
+							'lesson'	=>	$data_slot['lesson'],
+							'PID'		=>	$PID
+						])->with('word')->first();
+						$word_confirm = $learn_word_confirm->word;
+
+						$message_word = $word_confirm->word;
+						$message_word .= ' - ' . $word_confirm->name_word;
+						$message_word .= ' - ' . $word_confirm->means;
+						$message_word .= "\nPhát âm: " . $word_confirm->pronounce;
+						$message_word .= "\nMẹo nhớ: " . $word_confirm->tip_memory;
+						$message_word .= "\nTừ: " . $word_confirm->addition;
+						$result[] = [
+							'id'	=>	null,
+							'type'	=>	'text',
+							'message'	=>	$message_word
+						];
+
+						// confirm payload 
+						$result[] = [
+							'id'	=>	null,
+							'type'	=>	'button',
+							'message'	=>	'Học từ này chứ?',
+							'buttons' => [
+								[
+									"type"		=> "postback",
+									"title"		=> "Có",
+									"payload"	=> "INTENT::learn_word|confirm_word::yes:" . $learn_word_confirm->id
+								],
+								[
+									"type"		=> "postback",
+									"title"		=> "Không",
+									"payload"	=> "INTENT::learn_word|confirm_word::no:" . $learn_word_confirm->id
+								]
+							]
+						];
+					}
+
 					if ($intent_string == 'learn_word|END') {
 						$session->expired_at = date('Y-m-d H:i:s');
 						$session->save();
 					} else {
-						static::updateSession($session, $PID, $intent_name, $intent_addition);
+						static::updateSession($session, $PID, $intent_name, $intent_addition, $result[0]['slot']);
 					}
-
-					$result = static::getAnswerDb($intent_name, $intent_addition, $page_id);
 				}
 			}
+		}
+
+		if (count($result) == 0) {
+			$result = [
+				[
+					'id'	=>	null,
+					'type'	=>	'text',
+					'message'	=>	'I love you'
+				]
+			];
 		}
 
 		return $result;
 	}
 
-	public static function updateSession($session, $PID, $intent_name, $addition) {
+	public static function updateSession($session, $PID, $intent_name, $addition, $slot = null) {
 
 		// TODO: add expired_at adn where condition
 		if ($session) {
-			$session->intent_name = $intent_name;
-			$session->addition = $addition;
 			$session->started_at = date('Y-m-d H:i:s');
-			$session->save();
 		} else {
 			$session = new Session;
 			$session->PID = $PID;
-			$session->intent_name = $intent_name;
-			$session->addition = $addition;
-
-			$session->save();
 		}
+
+
+		$session->intent_name = $intent_name;
+		$session->addition = $addition;
+		if ($slot) {
+			$session->slot = $slot;
+		}
+		$session->save();
 	}
 
 	public static function getAnswerDb($intent_name, $state, $page_id) {

@@ -11,6 +11,8 @@ use App\Models\Fb\ButtonTemplate;
 
 abstract class KnowledgeHelper
 {
+	//TODO add attribute user
+
 	abstract public static function answer($query, $page_id, $PID);
 
 	public static function sendAnswer($input) {
@@ -51,14 +53,18 @@ abstract class KnowledgeHelper
 				];
 			}
 
-			$answer = static::answer($message, $id_page, $sender);
+			$answers = static::answer($message, $id_page, $sender);
 
+			$answer_id = null;
+			if (count($answers)) {
+				$answer_id = $answers[0]['id'];
+			}
 			// save log
 			$log = new Log;
 			$log->PID = $sender;
-			$log->message = json_encode($message);
+			$log->message = json_encode($answers);
 			$log->page_id = $id_page;
-			$log->answer_id = $answer['id'];
+			$log->answer_id = $answer_id;
 			$log->save();
 
 			// save user
@@ -72,26 +78,30 @@ abstract class KnowledgeHelper
 			}
 
 			$objData = new FbAnswer($sender);
-			$jsonData = "";
 
-			if ($answer['type'] == 'text') {
-				$answers = explode("\n", $answer['message']);
+			foreach ($answers as $answer) {
+				$jsonData = "";
 
-				foreach ($answers as $ans) {
-					if (!empty($ans)) {
-						$objData->setTextMessage($ans);
-						$jsonData = json_encode($objData);
+				if ($answer['type'] == 'text') {
+					$text_answers = explode("\n", $answer['message']);
 
-						CurlHelper::send($url, $jsonData);
+					foreach ($text_answers as $ans) {
+						if (!empty($ans)) {
+							$objData->setTextMessage($ans);
+							$jsonData = json_encode($objData);
+
+							CurlHelper::send($url, $jsonData);
+						}
 					}
 				}
-			}
 
-			if ($answer['type'] == 'button') {
-				$btn = new ButtonMessage('button', $answer['message'], json_decode($answer['buttons']));
-				$objData->setButtonMessage($btn);
-				$jsonData = json_encode($objData);
-				CurlHelper::send($url, $jsonData);
+				if ($answer['type'] == 'button') {
+					$btn = new ButtonMessage('button', $answer['message'], json_encode($answer['buttons']));
+					$objData->setButtonMessage($btn);
+					$jsonData = json_encode($objData);
+					
+					CurlHelper::send($url, $jsonData);
+				}
 			}
 		}
 	}
