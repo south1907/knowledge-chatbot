@@ -34,8 +34,9 @@ class ButtonTemplate
 
 	public $payload;
 
-	public function __construct($type, $title) {
+	public function __construct($type, $title, $payload = null) {
 		$this->type = $type;
 		$this->title = $title;
+		$this->payload = $payload;
 	}
 }

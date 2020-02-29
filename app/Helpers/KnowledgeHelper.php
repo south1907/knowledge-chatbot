@@ -96,10 +96,9 @@ abstract class KnowledgeHelper
 				}
 
 				if ($answer['type'] == 'button') {
-					$btn = new ButtonMessage('button', $answer['message'], json_encode($answer['buttons']));
+					$btn = new ButtonMessage('button', $answer['message'], json_decode($answer['buttons']));
 					$objData->setButtonMessage($btn);
 					$jsonData = json_encode($objData);
-					
 					CurlHelper::send($url, $jsonData);
 				}
 			}

@@ -229,7 +229,7 @@ class NyHelper extends KnowledgeHelper
 							'id'	=>	null,
 							'type'	=>	'button',
 							'message'	=>	'Học từ này chứ?',
-							'buttons' => [
+							'buttons' => json_encode([
 								[
 									"type"		=> "postback",
 									"title"		=> "Có",
@@ -240,7 +240,7 @@ class NyHelper extends KnowledgeHelper
 									"title"		=> "Không",
 									"payload"	=> "INTENT::learn_word|confirm_word::no:" . $learn_word_confirm->id
 								]
-							]
+							])
 						];
 					}
 
