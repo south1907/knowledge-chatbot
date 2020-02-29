@@ -212,17 +212,26 @@ class NyHelper extends KnowledgeHelper
 						$yes_or_no = $split_confirm[1];
 						$id_learn = $split_confirm[2];
 
-						$learn_confirm = Learn::find($id_learn);
-
-						if ($yes_or_no == 'yes') {
-							$learn_confirm->status = 'LEARNING';
+						if ($yes_or_no == 'stop') {
+							// update CANCEL in  all word of PID, lesson, status = NEW
+							Learn::where([
+								'status'	=>	'NEW',
+								'lesson'	=>	$data_slot['lesson'],
+								'PID'		=>	$PID
+							])->update(['status' => 'CANCEL']);
 						} else {
-							$learn_confirm->status = 'CANCEL';
+							$learn_confirm = Learn::find($id_learn);
+
+							if ($yes_or_no == 'yes') {
+								$learn_confirm->status = 'LEARNING';
+							} else {
+								$learn_confirm->status = 'CANCEL';
+							}
+
+							$learn_confirm->save();
+
+							$intent_string = 'learn_word|CHOICE_WORD';
 						}
-
-						$learn_confirm->save();
-
-						$intent_string = 'learn_word|CHOICE_WORD';
 					}
 
 					if ($intent_string == 'learn_word|CHOICE_WORD') {
@@ -262,6 +271,11 @@ class NyHelper extends KnowledgeHelper
 										"type"		=> "postback",
 										"title"		=> "Không",
 										"payload"	=> "INTENT::learn_word|confirm_word:no:" . $learn_word_confirm->id
+									],
+									[
+										"type"		=> "postback",
+										"title"		=> "Dừng",
+										"payload"	=> "INTENT::learn_word|confirm_word:stop"
 									]
 								])
 							];
