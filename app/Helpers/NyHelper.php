@@ -210,7 +210,6 @@ class NyHelper extends KnowledgeHelper
 					if (strpos($intent_string, 'learn_word|confirm_word') !== false) {
 						$split_confirm = explode(":", $intent_string);
 						$yes_or_no = $split_confirm[1];
-						$id_learn = $split_confirm[2];
 
 						if ($yes_or_no == 'stop') {
 							// update CANCEL in  all word of PID, lesson, status = NEW
@@ -225,8 +224,9 @@ class NyHelper extends KnowledgeHelper
 							if ($answerDb) {
 								$result[] = $answerDb;
 							}
-							
+
 						} else {
+							$id_learn = $split_confirm[2];
 							$learn_confirm = Learn::find($id_learn);
 
 							if ($yes_or_no == 'yes') {
