@@ -76,7 +76,7 @@ class NyHelper extends KnowledgeHelper
 
 						$result[] = $answers[$rand];
 
-						static::updateSession($session, $PID, $current_intent->name, NULL, $page_id);
+						static::updateSession($session, $PID, $current_intent->name, NULL, NULL);
 					}
 				} else {
 					if ($session && $session->intent_name == 'learn_word' && $session->addition == 'CUSTOM') {
