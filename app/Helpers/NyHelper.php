@@ -219,6 +219,13 @@ class NyHelper extends KnowledgeHelper
 								'lesson'	=>	$data_slot['lesson'],
 								'PID'		=>	$PID
 							])->update(['status' => 'CANCEL']);
+
+							$intent_string = 'learn_word|END';
+							$answerDb = static::getAnswerDb('learn_word', 'END', $page_id);
+							if ($answerDb) {
+								$result[] = $answerDb;
+							}
+							
 						} else {
 							$learn_confirm = Learn::find($id_learn);
 
