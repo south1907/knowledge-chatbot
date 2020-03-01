@@ -221,10 +221,6 @@ class NyHelper extends KnowledgeHelper
 	public static function reviewWordPostback($session, $PID, $page_id, $data_slot, $intent_string) {
 		$result = [];
 
-		if ($intent_string == 'review_word|MEANS') {
-
-		}
-
 		$intent_split = explode("|", $intent_string);
 
 		$intent_name = $intent_split[0];
@@ -237,6 +233,39 @@ class NyHelper extends KnowledgeHelper
 		$answerDb = static::getAnswerDb($intent_name, $intent_addition, $page_id);
 		if ($answerDb) {
 			$result[] = $answerDb;
+		}
+
+		if ($intent_string == 'review_word|MEANS') {
+			$learn_word = Learn::where([
+				'status'	=>	'LEARNING',
+				'PID'		=>	$PID
+			])->with('word')->first();
+
+			if ($learn_word) {
+				$word_review = $learn_word->word;
+
+				$message_word = "Từ " . $word_review->word . " nghĩa là gì nhỉ?";
+
+				$result[] = [
+					'id'	=>	null,
+					'type'	=>	'text',
+					'message'	=>	$message_word
+				];
+
+			} else {
+				$intent_string = 'review_word|END';
+				$answerDb = static::getAnswerDb('review_word', 'END', $page_id);
+				if ($answerDb) {
+					$result[] = $answerDb;
+				}
+			}
+		}
+
+		if ($intent_string == 'learn_word|END') {
+			$session->expired_at = date('Y-m-d H:i:s');
+			$session->save();
+		} else {
+			static::updateSession($session, $PID, $intent_name, $intent_addition, NULL);
 		}
 
 		return $result;
