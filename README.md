@@ -223,4 +223,23 @@ TYPE_IMPORT_WORD
 		"payload": "INTENT::learn_word|CHOICE_WORD"
 	}
 ]
+
+review_word
+[
+	{
+		"type": "postback",
+		"title": "Kiểm tra nghĩa",
+		"payload": "INTENT::review_word|MEANS"
+	},
+	{
+		"type": "postback",
+		"title": "Kiểm tra âm hán",
+		"payload": "INTENT::review_word|NAMEWORD"
+	},
+	{
+		"type": "postback",
+		"title": "Kiểm tra cách đọc",
+		"payload": "INTENT::review_word|PRONOUNCE"
+	}
+]
 ```
