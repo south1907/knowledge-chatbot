@@ -54,7 +54,7 @@ abstract class KnowledgeHelper
 			}
 
 			$answers = static::answer($message, $id_page, $sender);
-
+print_r($answers);die;
 			$answer_id = null;
 			if (count($answers)) {
 				$answer_id = $answers[0]['id'];

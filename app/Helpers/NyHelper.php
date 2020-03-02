@@ -85,7 +85,15 @@ class NyHelper extends KnowledgeHelper
 							$sentence = $query['content'];
 							$result = static::intentLearnWord($session, $PID, $page_id, $sentence);
 						}
+
+						if ($session->intent_name == 'review_word') {
+
+							$sentence = $query['content'];
+							$result = static::intentReviewWord($session, $PID, $page_id, $sentence);
+						}
 					}
+
+					
 
 				}
 			}
@@ -132,6 +140,129 @@ class NyHelper extends KnowledgeHelper
 		}
 
 		return $result;
+	}
+
+	public static function intentReviewWord($session, $PID, $page_id, $sentence) {
+		$result = [];
+		$flag_right = false;
+		$split_addition = explode(':', $session->addition);
+		$type_learn = $split_addition[0];
+		$id_learn = $split_addition[1];
+
+		$learn = Learn::find($id_learn);
+		
+		// addition, can update if next word
+		$addition = $session->addition;
+
+		// if find learn
+		if ($learn) {
+
+			$word = $learn->word;
+			if (strpos($session->addition, 'MEANS:') !== false) {
+				
+				$means = array_map('trim', explode(',', $word->means));
+
+				foreach ($means as $mean) {
+					if (mb_strtolower($mean) == $sentence) {
+						//flag right
+						$flag_right = true;
+						break;
+					}
+				}
+			}
+
+			if (strpos($session->addition, 'NAMEWORD:') !== false) {
+
+				$name_word = mb_strtolower($word->name_word);
+
+				if ($name_word == $sentence) {
+					//flag right
+					$flag_right = true;
+				}
+			}
+
+			if (strpos($session->addition, 'PRONOUNCE:') !== false) {
+				
+				$pronounces = array_map('trim', explode(',', $word->pronounce));
+
+				foreach ($pronounces as $pronounce) {
+					if (mb_strtolower($pronounce) == $sentence) {
+						//flag right
+						$flag_right = true;
+						break;
+					}
+				}
+			}
+
+			if ($flag_right) {
+				// answer mean right
+				$result[] = [
+					'id'	=>	null,
+					'type'	=>	'text',
+					'message'	=>	'Bạn đã trả lời đúng!'
+				];
+				$result = array_merge($result, static::createInfoWord($word));
+
+				// update status learn
+				$learn->status = 'REVIEWED';
+				$learn->save();
+
+				// continue review
+				$review_word = Learn::where([
+					'status'	=>	'LEARNING',
+					'PID'		=>	$PID
+				])->with('word')->first();
+
+				if ($review_word) {
+					$word_review = $review_word->word;
+
+					$message_word = "Từ " . $word_review->word . " nghĩa là gì nhỉ?";
+
+					$result[] = [
+						'id'	=>	null,
+						'type'	=>	'text',
+						'message'	=>	$message_word
+					];
+
+					// set addition to update session addition
+					$addition = $type_learn . ':' . $review_word->id;
+
+				} else {
+					$intent_string = 'review_word|DONE';
+					$answerDb = static::getAnswerDb('review_word', 'DONE', $page_id);
+					if ($answerDb) {
+						$result[] = $answerDb;
+					}
+					// TODO: add postback ask reset review again next time
+				}
+			} else {
+				// wrong
+				$result[] = [
+					'id'	=>	null,
+					'type'	=>	'text',
+					'message'	=>	'Sai rồi, vui lòng trả lời lại!'
+				];
+
+				//button view answers
+				$result[] = [
+					'id'	=>	null,
+					'type'	=>	'button',
+					'message'	=>	'Xem đáp án?',
+					'buttons' => json_encode([
+						[
+							"type"		=> "postback",
+							"title"		=> "Xem",
+							"payload"	=> "INTENT::review_word|". $type_learn .":" . $id_learn
+						]
+					])
+				];
+			}
+		}
+
+		static::updateSession($session, $PID, $session->intent_name, $addition, NULL);
+
+		return $result;
+
 	}
 
 	public static function intentLearnWord($session, $PID, $page_id, $sentence) {
@@ -235,6 +366,61 @@ class NyHelper extends KnowledgeHelper
 			$result[] = $answerDb;
 		}
 
+		$id_learn_view = NULL;
+		$type_learn_view = NULL;
+		if ($intent_addition) {
+			$addition_split = explode(':', $intent_addition);
+			if (count($addition_split) > 1) {
+				$id_learn_view = $addition_split[1];
+				$type_learn_view = $addition_split[0];
+			}
+		}
+
+		//view answer
+		if ($id_learn_view) {
+			$learn = Learn::find($id_learn_view);
+
+			if ($learn) {
+				$word_view = $learn->word;
+
+				$result = array_merge($result, static::createInfoWord($word_view));
+
+				// update status learn
+				$learn->status = 'FAILED';
+				$learn->save();
+
+				// continue review
+				$review_word = Learn::where([
+					'status'	=>	'LEARNING',
+					'PID'		=>	$PID
+				])->with('word')->first();
+
+				if ($review_word) {
+					$word_review = $review_word->word;
+
+					$message_word = "Từ " . $word_review->word . " nghĩa là gì nhỉ?";
+
+					$result[] = [
+						'id'	=>	null,
+						'type'	=>	'text',
+						'message'	=>	$message_word
+					];
+
+					// set addition to update session addition
+					$intent_addition = $type_learn_view . ':' . $review_word->id;
+
+				} else {
+					$intent_string = 'review_word|DONE';
+					$answerDb = static::getAnswerDb('review_word', 'DONE', $page_id);
+					if ($answerDb) {
+						$result[] = $answerDb;
+					}
+					// TODO: add postback ask reset review again next time
+				}
+
+			}
+		}
+
 		if ($intent_string == 'review_word|MEANS') {
 			$learn_word = Learn::where([
 				'status'	=>	'LEARNING',
@@ -252,9 +438,12 @@ class NyHelper extends KnowledgeHelper
 					'message'	=>	$message_word
 				];
 
+				// set intent_addtion to update session addition
+				$intent_addition = 'MEANS:' . $learn_word->id;
+
 			} else {
-				$intent_string = 'review_word|END';
-				$answerDb = static::getAnswerDb('review_word', 'END', $page_id);
+				$intent_string = 'review_word|DONE';
+				$answerDb = static::getAnswerDb('review_word', 'DONE', $page_id);
 				if ($answerDb) {
 					$result[] = $answerDb;
 				}
@@ -347,18 +536,8 @@ class NyHelper extends KnowledgeHelper
 			if ($learn_word_confirm) {
 				$word_confirm = $learn_word_confirm->word;
 
-				$message_word = $word_confirm->word;
-				$message_word .= ' - ' . $word_confirm->name_word;
-				$message_word .= ' - ' . $word_confirm->means;
-				$message_word .= "\nPhát âm: " . $word_confirm->pronounce;
-				$message_word .= "\nMẹo nhớ: " . $word_confirm->tip_memory;
-				$message_word .= "\nTừ: " . $word_confirm->addition;
-				$result[] = [
-					'id'	=>	null,
-					'type'	=>	'text',
-					'message'	=>	$message_word
-				];
-
+				$result = array_merge($result, static::createInfoWord($word_confirm));
+				
 				// confirm payload 
 				$result[] = [
 					'id'	=>	null,
@@ -456,6 +635,23 @@ class NyHelper extends KnowledgeHelper
 
 	public static function isJapanese($str) {
 	    return static::isKanji($str) || static::isHiragana($str) || static::isKatakana($str);
+	}
+
+	public static function createInfoWord($word) {
+		$result = [];
+		$message_word = $word->word;
+		$message_word .= ' - ' . $word->name_word;
+		$message_word .= ' - ' . $word->means;
+		$message_word .= "\nPhát âm: " . $word->pronounce;
+		$message_word .= "\nMẹo nhớ: " . $word->tip_memory;
+		$message_word .= "\nTừ: " . $word->addition;
+		$result[] = [
+			'id'	=>	null,
+			'type'	=>	'text',
+			'message'	=>	$message_word
+		];
+
+		return $result;
 	}
 
 }
