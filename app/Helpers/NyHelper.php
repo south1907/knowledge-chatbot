@@ -155,13 +155,14 @@ class NyHelper extends KnowledgeHelper
 			
 			// addition, can update if next word
 			$addition = $session->addition;
+			$ask = '';
 
 			// if find learn
 			if ($learn) {
 
 				$word = $learn->word;
 				if (strpos($session->addition, 'MEANS:') !== false) {
-					
+					$ask = 'nghĩa';
 					$means = array_map('trim', explode(',', $word->means));
 
 					foreach ($means as $mean) {
@@ -174,7 +175,7 @@ class NyHelper extends KnowledgeHelper
 				}
 
 				if (strpos($session->addition, 'NAMEWORD:') !== false) {
-
+					$ask = 'âm hán';
 					$name_word = mb_strtolower($word->name_word);
 
 					if ($name_word == $sentence) {
@@ -184,7 +185,7 @@ class NyHelper extends KnowledgeHelper
 				}
 
 				if (strpos($session->addition, 'PRONOUNCE:') !== false) {
-					
+					$ask = 'phát âm';
 					$pronounces = array_map('trim', explode(',', $word->pronounce));
 
 					foreach ($pronounces as $pronounce) {
@@ -217,7 +218,7 @@ class NyHelper extends KnowledgeHelper
 					if ($review_word) {
 						$word_review = $review_word->word;
 
-						$message_word = "Từ " . $word_review->word . " nghĩa là gì nhỉ?";
+						$message_word = "Từ " . $word_review->word . " " . $ask . " là gì?";
 
 						$result[] = [
 							'id'	=>	null,
@@ -379,7 +380,6 @@ class NyHelper extends KnowledgeHelper
 				$type_learn_view = $addition_split[0];
 			}
 		}
-
 		//view answer
 		if ($id_learn_view) {
 			$learn = Learn::find($id_learn_view);
@@ -422,14 +422,47 @@ class NyHelper extends KnowledgeHelper
 
 					$session->addition = 'DONE';
 					$session->save();
-					// TODO: add postback ask reset review again next time
 
 				}
 
 			}
-		}
+		} else if ($intent_addition == 'RESET') {
+			// reset review. Need to change status REVIEWED to LEARNING
+			print_r('vao day roi');
+			Learn::where([
+				'status'	=>	'REVIEWED',
+				'PID'		=>	$PID
+			])->update(['status' => 'LEARNING']);
 
-		if ($intent_string == 'review_word|MEANS') {
+			$session->expired_at = date('Y-m-d H:i:s');
+			$session->save();
+
+		} else if ($intent_addition == 'COMPLETE') {
+			print_r('vao day roi');
+			// complete review. Need to change status REVIEWED to DONE
+			
+			Learn::where([
+				'status'	=>	'REVIEWED',
+				'PID'		=>	$PID
+			])->update(['status' => 'DONE']);
+			
+			$session->expired_at = date('Y-m-d H:i:s');
+			$session->save();
+
+		} else {
+			// when click postback to init type to start review
+			$ask = '';
+			if ($intent_addition == 'MEANS') {
+				$ask = 'nghĩa';
+			}
+
+			if ($intent_addition == 'NAMEWORD') {
+				$ask = 'âm hán';
+			}
+
+			if ($intent_addition == 'PRONOUNCE') {
+				$ask = 'phát âm';
+			}
 			$learn_word = Learn::where([
 				'status'	=>	'LEARNING',
 				'PID'		=>	$PID
@@ -438,7 +471,7 @@ class NyHelper extends KnowledgeHelper
 			if ($learn_word) {
 				$word_review = $learn_word->word;
 
-				$message_word = "Từ " . $word_review->word . " nghĩa là gì nhỉ?";
+				$message_word = "Từ " . $word_review->word . " " . $ask . " là gì nhỉ?";
 
 				$result[] = [
 					'id'	=>	null,
@@ -447,7 +480,7 @@ class NyHelper extends KnowledgeHelper
 				];
 
 				// set intent_addtion to update session addition
-				$intent_addition = 'MEANS:' . $learn_word->id;
+				$intent_addition = $intent_addition . ':' . $learn_word->id;
 
 			} else {
 				$intent_string = 'review_word|DONE';
@@ -465,7 +498,7 @@ class NyHelper extends KnowledgeHelper
 			$session->expired_at = date('Y-m-d H:i:s');
 			$session->save();
 		} else {
-			static::updateSession($session, $PID, $intent_name, $intent_addition, NULL);
+			// static::updateSession($session, $PID, $intent_name, $intent_addition, NULL);
 		}
 
 		return $result;
