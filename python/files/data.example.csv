@@ -1,9 +1,129 @@
-name	patterns	sentences	answers	gender	positive
-love	(anh|em).*(yêu|thương|thích|mến) (anh|em)$	anh cực kỳ yêu em luôn ý	Em cũng vậy, em cũng yêu em :p	1	1
-	(anh|em).*(yêu|thương|thích|mến) (anh|em) (?!không|chứ)	anh thương em nhất luôn	Em yêu anh <3	1	1
-		anh thề anh yêu em mãi mãi	Em không yêu anh đâu	1	0
-			Đừng làm phiền em nữa	1	0
-ask_love	(làm).*(người yêu|vợ|chồng) (anh|em)	yêu anh đi	Ok, em đồng ý	1	1
-	(lấy|yêu) (anh|em).*(nhé|nha|nhá|đi|k|không)	đến với anh này	ừ, em yêu anh	1	1
-		mình cưới nha em	Méo nhé :))	1	0
-			Đm, đéo	1	0
+name	patterns	sentences	ình	gender	positive	state	type	buttons	url	slot
+love	(anh|em).*(yêu|thương|thích|mến) (anh|em)$	anh cực kỳ yêu em luôn ý	Em cũng vậy, em cũng yêu em :p	1	1		text			
+	(anh|em).*(yêu|thương|thích|mến) (anh|em) (?!không|chứ)	anh thương em nhất luôn	Em yêu anh <3	1	1		text			
+		anh thề anh yêu em mãi mãi	Em không yêu anh đâu	1	0		text			
+			Đừng làm phiền em nữa	1	0		text			
+			Em cũng yêu anh nhứt luôn	1	1		text			
+			Thì sao	1	0		text			
+			T đéo yêu m :D	1	0		text			
+			ờ	1	0		text			
+ask_love	(làm).*(người yêu|vợ|chồng) (anh|em)	yêu anh đi	Ok, em đồng ý	1	1		text			
+	(lấy|yêu) (anh|em).*(nhé|nha|nhá|đi|k|không)	đến với anh này	ừ, em yêu anh	1	1		text			
+		mình cưới nha em	Méo nhé :))	1	0		text			
+			Đm, đéo	1	0		text			
+help		help;get started;trợ giúp	"Xin chào, mình là bot Ny (Nờ y ny) do anh Nam mình tạo ra mình.
+Mình có các chức năng như:
+- Chào hỏi cơ bản: các câu kiểu chào hỏi (hi, hello, em ơi, anh ơi, anh bảo này)
+- Nói lời yêu thương: kiểu như “anh yêu em” này, “em có yêu anh không” này, vân vân… Có thể yêu xong rồi chia tay luôn cũng được (mình chia tay đi)
+- Chửi thề: đm, vc,… (chức năng này bị hạn chế một số từ :D :D :D)
+- Học Kanji
+- Học từ mới tiếng anh (coming soon)
+- Trò chơi bài hát (coming soon)
+- Dạy Ny nào (cú pháp nếu anh bảo là em yêu anh không thì em nói là có nhé)"				text			
+talk	(anh|em).*(muốn nói|bảo).*(anh|em)?		Em nghe nè	1	1		text			
+			Đéo gì cơ	1	0		text			
+			Gì	1	0		text			
+			Bảo luôn đi, lòng vòng vc	1	0		text			
+			Dạ	1	1		text			
+			Vâng ạ	1	1		text			
+			Nghe	1	1		text			
+			Nói	1	0		text			
+bye_never	(biến|cút|xéo).*(đi)?		Ok	1	1		text			
+			Ok, fine	1	1		text			
+			cc	1	0		text			
+			Đm, đéo	1	0		text			
+			:(	1	1		text			
+			Đéo cần	1	1		text			
+bye_never	(tạm biệt|bye|gặp lại)		Ok, hẹn gặp lại	1	1		text			
+			Bye	1	1		text			
+			yep!	1	1		text			
+			Cho nhà ngươi lui	1	0		text			
+			Cho khanh lui	1	0		text			
+			Cút	1	0		text			
+cursing	(thằng|con|đồ) chó;(địt|lồn|cặc|lịt|chịch|đm|cmm|vc|vl|ngu)		Cc	1	0		text			
+			Vc	1	0		text			
+			Đm	1	0		text			
+			Vl	1	0		text			
+			chịch chịch	1	0		text			
+			lịt pẹ	1	0		text			
+			Nhục	1	0		text			
+			con chó	1	0		text			
+			đồ chó	1	0		text			
+			vcl	1	0		text			
+			mịa m	1	0		text			
+why	(vì|tại) sao	...;?;???;.	Có lẽ chúng ta không hợp nhau	1	1		text			
+			Chả vì sao cả	1	1		text			
+			Thích	1	0		text			
+			Đéo yêu nữa	1	0		text			
+			Đéo cần nữa	1	0		text			
+			Chán	1	0		text			
+			Đừng hỏi vì sao…	1	0		text			
+			Một khi đã máu thì đừng hỏi bố cháu là ai	1	0		text			
+because	(chắc|có lẽ|là).*(không hợp)	hết yêu rồi;hết thương cạn nhớ	Ok, fine	1	0		text			
+			Chán rồi à	1	0		text			
+			Người nói chia tay phải không, muốn quên em phải không	1	0		text			
+			Mình có thể bắt đầu lại từ đầu được không	1	0		text			
+			Ok, anh hiểu	0	1		text			
+			Biết nói gì giờ	1	1		text			
+			Chia tay nói gì cho nó ngầu	1	1		text			
+			Thôi, cút đi	1	0		text			
+break_up	(quên) (em|anh);(chia tay).*(đi|nhé)		Tại sao chứ	1	1		text			
+			Vì sao	1	1		text			
+			Không hiểu	1	1		text			
+			?	1	1		text			
+			Thật luôn	1	1		text			
+			Ơ thế không yêu nữa à?	1	1		text			
+			wtf	1	0		text			
+			Cút -_-	1	0		text			
+good_night	(chúc).*(ngủ ngon)|(anh|em) (ngủ) đi		Bye	1	1		text			
+			G9	1	1		text			
+			Tạm biệt, mai gặp lại	1	1		text			
+			Bye nhé	1	1		text			
+			Ngủ ngon nha	1	1		text			
+			Ngủ ngon nhé	1	1		text			
+			Chúc em ngủ ngon	0	1		text			
+			Chúc anh ngủ ngon	1	1		text			
+			ngủ cc	1	0		text			
+call	(ny|bạn|cậu|anh|em) ơi;(chào|hi|hello) (em|anh)	alo;alô;hi;hihi;haha	Anh đây	0	1		text			
+			Đây	1	1		text			
+			Nghe nè	1	1		text			
+			blô	1	1		text			
+			Gọi chi vậy	1	0		text			
+			Gọi hoài	1	0		text			
+			Ta đây	1	0		text			
+			Nhà ngươi gọi ta gì vậy	1	0		text			
+yes_or_no	.* có .* không		Có	1	1		text			
+			Không	1	0		text			
+			Hên xui	1	1		text			
+			Không biết	1	1		text			
+			Méo biết	1	0		text			
+			Chịu	1	0		text			
+			Khó vc	1	0		text			
+			Đừng hỏi t những câu như thế	1	0		text			
+			Đi mà hỏi họ ý	1	0		text			
+			Có biết t cũng không nói cho m đâu	1	0		text			
+			Bắc thang mà lên hỏi ông trời ý	1	0		text			
+			T chịu thôi	1	0		text			
+			Ngu ngốc	1	0		text			
+			Có cc	1	0		text			
+			Ai biết	1	0		text			
+confirm	(vậy|thế) (á|à|a|luôn)		ừ	1	1		text			
+			chả thế	1	0		text			
+			Cũng tùy	1	0		text			
+			:))	1	1		text			
+			Chứ sao	1	0		text			
+			Còn phải hỏi	1	0		text			
+			Ok	1	1		text			
+			Hihi	1	1		text			
+			Haha	1	1		text			
+ask_miss	nhớ (anh|em|t|a) (không|k)		Có, hihi	1	0		text			
+			Không, haha	1	1		text			
+			Ai biết :p	1	1		text			
+			k ạ :))	1	1		text			
+			Không đấy	1	1		text			
+			nhớ cc	1	0		text			
+			Mình mới gặp nhau mà	1	1		text			
+			Trời, tối em qua nhé	1	1		text			
+			Hihi, tối em qua chơi nhé	1	1		text			
+			Mới xa nhau có tí mà…	1	1		text			
+			Ok, em biết rồi	1	1		text			

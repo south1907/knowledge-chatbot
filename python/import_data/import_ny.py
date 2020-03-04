@@ -9,6 +9,8 @@ with open('../files/data.csv') as f:
 	del data[0]
 	f.close()
 
+# print(data)
+
 mysql_config = config['mysql']
 
 mydb = mysql.connector.connect(
@@ -17,28 +19,29 @@ mydb = mysql.connector.connect(
 	passwd=mysql_config['password'],
 	database=mysql_config['database']
 )
+page_id = '100161904867171'
 
 mycursor = mydb.cursor()
 
 # function insert intent
-def insert_intent(intent, patterns, sentences, answers):
+def insert_intent(intent, patterns, sentences, answers, page_id):
 	if intent not in intents_indb:
 		string_patterns = ";".join(patterns)
 		string_sentences = ";".join(sentences)
 
-		sql_intent = "INSERT INTO intents (name, patterns, sentences) VALUES (%s, %s, %s)"
-		val_intent = (intent, string_patterns, string_sentences)
+		sql_intent = "INSERT INTO intents (name, patterns, sentences, page_id) VALUES (%s, %s, %s, %s)"
+		val_intent = (intent, string_patterns, string_sentences, page_id)
 		mycursor.execute(sql_intent, val_intent)
 		mydb.commit()
 
 		id_intent = mycursor.lastrowid
 
-		sql_answer = "INSERT INTO answers (message, intent_id, gender, positive) VALUES (%s, %s, %s, %s)"
+		sql_answer = "INSERT INTO answers (message, intent_id, intent_name, gender, positive, state, page_id, type, buttons, url, slot) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 		val_answers = []
 
 		for ans in answers:
 
-			temp_answer = (ans['answer'], id_intent, ans['gender'], ans['positive'])
+			temp_answer = (ans['answer'], id_intent, intent, ans['gender'], ans['positive'], ans['state'], page_id, ans['type'], ans['buttons'], ans['url'], ans['slot'])
 			val_answers.append(temp_answer)
 
 		mycursor.executemany(sql_answer, val_answers)
@@ -58,8 +61,8 @@ answers = []
 for row in data:
 	row_split = row.split("\t")
 
-	# if len == 6 --> enough field --> process
-	if len(row_split) == 6:
+	# if len == 11 --> enough field --> process
+	if len(row_split) == 11:
 		row_intent = row_split[0]
 		row_pattern = row_split[1]
 		row_sentence = row_split[2]
@@ -69,7 +72,7 @@ for row in data:
 			# finish current_intent and insert to db if current_intent != ''
 			if current_intent != '':
 
-				insert_intent(current_intent, patterns, sentences, answers)
+				insert_intent(current_intent, patterns, sentences, answers, page_id)
 
 				# set null list
 				patterns = []
@@ -88,12 +91,18 @@ for row in data:
 		
 		if row_answer != '':
 			# add answer to list
+
 			temp = {
 				"answer": row_answer,
 				"gender": row_split[4],
 				"positive": row_split[5],
+				"state": row_split[6],
+				"type": row_split[7],
+				"buttons": row_split[8],
+				"url": row_split[9],
+				"slot": row_split[10]
 			}
 			answers.append(temp)
 
 #TODO: insert last intent -> DONE
-insert_intent(current_intent, patterns, sentences, answers)
+insert_intent(current_intent, patterns, sentences, answers, page_id)
