@@ -8,13 +8,24 @@ class XSMBHelper extends KnowledgeHelper
 	public static function answer($query, $page_id, $PID) {
 
 		$result = [
-			'type'		=>	'text',
-			'message'	=> 'Xin lỗi, tôi còn trẻ, tôi chưa thể trả lời những câu hỏi đó được...'
-		];
+				[
+					'id'	=>	null,
+					'type'	=>	'text',
+					'message'	=>	'Xin lỗi, tôi còn trẻ, tôi chưa thể trả lời những câu hỏi đó được...'
+				]
+			];
 		
 		$CLIENT_WIT = env("CLIENT_WIT", "");
+		
+		if (!array_key_exists('content', $query)) {
+			return $result;
+		}
+
+		$message = $query['content'];
+
 		$client = new Client(['headers' => ['Authorization' => 'Bearer ' . $CLIENT_WIT]]);
-		$response = $client->request('GET', 'https://api.wit.ai/message', ['query' => ['q' => $query]]);
+		$response = $client->request('GET', 'https://api.wit.ai/message', ['query' => ['q' => $message]]);
+		
 		$body = $response->getBody();
 		$obj = json_decode($body, true);
 
@@ -124,7 +135,12 @@ class XSMBHelper extends KnowledgeHelper
 					break;
 			}
 		}
-		return ['type' => 'text', 'message' => $result];
+		return [
+			[
+				'type' => 'text',
+				'message' => $result
+			]
+		];
 	}
 
 	private static function queryNumberSpecial($query_time) {
