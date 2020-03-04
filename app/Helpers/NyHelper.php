@@ -116,13 +116,13 @@ class NyHelper extends KnowledgeHelper
 					if (strpos($intent_string, 'learn_word|') !== false) {
 
 						// process learn word: choice word want to learn
-						$result = static::learnWordPostback($session, $PID, $page_id, $session_slot, $intent_string);
+						$result = static::learnWordPostback($session, $PID, $page_id, $data_slot, $intent_string);
 					}
 
 					if (strpos($intent_string, 'review_word|') !== false) {
 
 						// process review word: review word added in system (STATUS: LEARNING)
-						$result = static::reviewWordPostback($session, $PID, $page_id, $session_slot, $intent_string);
+						$result = static::reviewWordPostback($session, $PID, $page_id, $data_slot, $intent_string);
 					}
 					
 				}
