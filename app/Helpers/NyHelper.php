@@ -237,7 +237,6 @@ class NyHelper extends KnowledgeHelper
 						}
 
 						$addition = 'DONE';
-						// TODO: add postback ask reset review again next time
 					}
 				} else {
 					// wrong
@@ -282,15 +281,28 @@ class NyHelper extends KnowledgeHelper
 				if (static::isJapanese($word_split[0])) {
 
 					// TODO: check word if exists
-					$newWord = new Word;
-					$newWord->word = trim($word_split[0]);
-					$newWord->name_word = trim($word_split[1]);
-					$newWord->means = trim($word_split[2]);
-					$newWord->language = 'JA';
-					$newWord->page_id = $page_id;
-					$newWord->created_by_PID = $PID;
+					$newWord = Word::where('word', $word_split[0])->first();
 
-					$newWord->save();
+					if (!$newWord) {
+						$newWord = new Word;
+						$newWord->word = trim($word_split[0]);
+						$newWord->name_word = trim($word_split[1]);
+						$newWord->means = trim($word_split[2]);
+						$newWord->language = 'JA';
+						$newWord->page_id = $page_id;
+						$newWord->created_by_PID = $PID;
+
+						$newWord->save();
+					}
+
+					// create learning
+					$learn = new Learn;
+					$learn->PID = $PID;
+					$learn->word_id = $newWord->id;
+					$learn->page_id = $page_id;
+					$learn->lesson = $newWord->lesson;
+					$learn->status = 'LEARNING';
+					$learn->save();
 
 					$addition = 'SUCCESS';
 					$result[] = static::getAnswerDb($session->intent_name, $addition, $page_id);
