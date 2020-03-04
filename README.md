@@ -242,4 +242,18 @@ review_word
 		"payload": "INTENT::review_word|PRONOUNCE"
 	}
 ]
+
+review_word DONE
+[
+	{
+		"type": "postback",
+		"title": "Reset Ôn tập",
+		"payload": "INTENT::review_word|RESET"
+	},
+	{
+		"type": "postback",
+		"title": "Hoàn thành ôn tập",
+		"payload": "INTENT::review_word|COMPLETE"
+	}
+]
 ```

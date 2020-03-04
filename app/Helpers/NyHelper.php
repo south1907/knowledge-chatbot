@@ -146,121 +146,125 @@ class NyHelper extends KnowledgeHelper
 		$result = [];
 		$flag_right = false;
 		$split_addition = explode(':', $session->addition);
-		$type_learn = $split_addition[0];
-		$id_learn = $split_addition[1];
 
-		$learn = Learn::find($id_learn);
-		
-		// addition, can update if next word
-		$addition = $session->addition;
+		if (count($split_addition) > 1) {
+			$type_learn = $split_addition[0];
+			$id_learn = $split_addition[1];
 
-		// if find learn
-		if ($learn) {
+			$learn = Learn::find($id_learn);
+			
+			// addition, can update if next word
+			$addition = $session->addition;
 
-			$word = $learn->word;
-			if (strpos($session->addition, 'MEANS:') !== false) {
-				
-				$means = array_map('trim', explode(',', $word->means));
+			// if find learn
+			if ($learn) {
 
-				foreach ($means as $mean) {
-					if (mb_strtolower($mean) == $sentence) {
-						//flag right
-						$flag_right = true;
-						break;
+				$word = $learn->word;
+				if (strpos($session->addition, 'MEANS:') !== false) {
+					
+					$means = array_map('trim', explode(',', $word->means));
+
+					foreach ($means as $mean) {
+						if (mb_strtolower($mean) == $sentence) {
+							//flag right
+							$flag_right = true;
+							break;
+						}
 					}
 				}
-			}
 
-			if (strpos($session->addition, 'NAMEWORD:') !== false) {
+				if (strpos($session->addition, 'NAMEWORD:') !== false) {
 
-				$name_word = mb_strtolower($word->name_word);
+					$name_word = mb_strtolower($word->name_word);
 
-				if ($name_word == $sentence) {
-					//flag right
-					$flag_right = true;
-				}
-			}
-
-			if (strpos($session->addition, 'PRONOUNCE:') !== false) {
-				
-				$pronounces = array_map('trim', explode(',', $word->pronounce));
-
-				foreach ($pronounces as $pronounce) {
-					if (mb_strtolower($pronounce) == $sentence) {
+					if ($name_word == $sentence) {
 						//flag right
 						$flag_right = true;
-						break;
 					}
 				}
-			}
 
-			if ($flag_right) {
-				// answer mean right
-				$result[] = [
-					'id'	=>	null,
-					'type'	=>	'text',
-					'message'	=>	'Bạn đã trả lời đúng!'
-				];
-				$result = array_merge($result, static::createInfoWord($word));
+				if (strpos($session->addition, 'PRONOUNCE:') !== false) {
+					
+					$pronounces = array_map('trim', explode(',', $word->pronounce));
 
-				// update status learn
-				$learn->status = 'REVIEWED';
-				$learn->save();
+					foreach ($pronounces as $pronounce) {
+						if (mb_strtolower($pronounce) == $sentence) {
+							//flag right
+							$flag_right = true;
+							break;
+						}
+					}
+				}
 
-				// continue review
-				$review_word = Learn::where([
-					'status'	=>	'LEARNING',
-					'PID'		=>	$PID
-				])->with('word')->first();
-
-				if ($review_word) {
-					$word_review = $review_word->word;
-
-					$message_word = "Từ " . $word_review->word . " nghĩa là gì nhỉ?";
-
+				if ($flag_right) {
+					// answer mean right
 					$result[] = [
 						'id'	=>	null,
 						'type'	=>	'text',
-						'message'	=>	$message_word
+						'message'	=>	'Bạn đã trả lời đúng!'
+					];
+					$result = array_merge($result, static::createInfoWord($word));
+
+					// update status learn
+					$learn->status = 'REVIEWED';
+					$learn->save();
+
+					// continue review
+					$review_word = Learn::where([
+						'status'	=>	'LEARNING',
+						'PID'		=>	$PID
+					])->with('word')->first();
+					if ($review_word) {
+						$word_review = $review_word->word;
+
+						$message_word = "Từ " . $word_review->word . " nghĩa là gì nhỉ?";
+
+						$result[] = [
+							'id'	=>	null,
+							'type'	=>	'text',
+							'message'	=>	$message_word
+						];
+
+						// set addition to update session addition
+						$addition = $type_learn . ':' . $review_word->id;
+
+					} else {
+						$intent_string = 'review_word|DONE';
+						$answerDb = static::getAnswerDb('review_word', 'DONE', $page_id);
+						if ($answerDb) {
+							$result[] = $answerDb;
+						}
+
+						$addition = 'DONE';
+						// TODO: add postback ask reset review again next time
+					}
+				} else {
+					// wrong
+					$result[] = [
+						'id'	=>	null,
+						'type'	=>	'text',
+						'message'	=>	'Sai rồi, vui lòng trả lời lại!'
 					];
 
-					// set addition to update session addition
-					$addition = $type_learn . ':' . $review_word->id;
-
-				} else {
-					$intent_string = 'review_word|DONE';
-					$answerDb = static::getAnswerDb('review_word', 'DONE', $page_id);
-					if ($answerDb) {
-						$result[] = $answerDb;
-					}
-					// TODO: add postback ask reset review again next time
+					//button view answers
+					$result[] = [
+						'id'	=>	null,
+						'type'	=>	'button',
+						'message'	=>	'Xem đáp án?',
+						'buttons' => json_encode([
+							[
+								"type"		=> "postback",
+								"title"		=> "Xem",
+								"payload"	=> "INTENT::review_word|". $type_learn .":" . $id_learn
+							]
+						])
+					];
 				}
-			} else {
-				// wrong
-				$result[] = [
-					'id'	=>	null,
-					'type'	=>	'text',
-					'message'	=>	'Sai rồi, vui lòng trả lời lại!'
-				];
-
-				//button view answers
-				$result[] = [
-					'id'	=>	null,
-					'type'	=>	'button',
-					'message'	=>	'Xem đáp án?',
-					'buttons' => json_encode([
-						[
-							"type"		=> "postback",
-							"title"		=> "Xem",
-							"payload"	=> "INTENT::review_word|". $type_learn .":" . $id_learn
-						]
-					])
-				];
 			}
+
+			static::updateSession($session, $PID, $session->intent_name, $addition, NULL);
 		}
-
-		static::updateSession($session, $PID, $session->intent_name, $addition, NULL);
-
+		
 		return $result;
 
 	}
@@ -415,7 +419,11 @@ class NyHelper extends KnowledgeHelper
 					if ($answerDb) {
 						$result[] = $answerDb;
 					}
+
+					$session->addition = 'DONE';
+					$session->save();
 					// TODO: add postback ask reset review again next time
+
 				}
 
 			}
@@ -447,6 +455,9 @@ class NyHelper extends KnowledgeHelper
 				if ($answerDb) {
 					$result[] = $answerDb;
 				}
+
+				$session->addition = 'DONE';
+				$session->save();
 			}
 		}
 
