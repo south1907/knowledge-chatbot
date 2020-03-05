@@ -440,7 +440,6 @@ class NyHelper extends KnowledgeHelper
 			}
 		} else if ($intent_addition == 'RESET') {
 			// reset review. Need to change status REVIEWED to LEARNING
-			print_r('vao day roi');
 			Learn::where([
 				'status'	=>	'REVIEWED',
 				'PID'		=>	$PID
@@ -450,7 +449,6 @@ class NyHelper extends KnowledgeHelper
 			$session->save();
 
 		} else if ($intent_addition == 'COMPLETE') {
-			print_r('vao day roi');
 			// complete review. Need to change status REVIEWED to DONE
 			
 			Learn::where([
@@ -510,7 +508,7 @@ class NyHelper extends KnowledgeHelper
 			$session->expired_at = date('Y-m-d H:i:s');
 			$session->save();
 		} else {
-			// static::updateSession($session, $PID, $intent_name, $intent_addition, NULL);
+			static::updateSession($session, $PID, $intent_name, $intent_addition, NULL);
 		}
 
 		return $result;
