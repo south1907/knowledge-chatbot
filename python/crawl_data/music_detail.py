@@ -134,7 +134,8 @@ for music in musics_indb:
 			current_count = 0
 			# break
 	except Exception as e:
-		print('loi roi')
+		print('loi roi, sleep 5s')
+		time.sleep(5)
 	
 # update last
 if current_count != 0:
