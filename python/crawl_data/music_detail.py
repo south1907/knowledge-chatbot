@@ -124,20 +124,23 @@ for music in musics_indb:
 		temp_val = (name, name_short, "\n".join(arr_sentence_no_chord), "\n".join(arr_sentence), note_chord_str, rhythm, youtube, 1, id_music)
 		val_update_music.append(temp_val)
 
-		if current_count > 50:
-
-			mycursor.executemany(sql_update_music, val_update_music)
-			mydb.commit()
+		if current_count > 10:
 
 			# reset 
 			val_update_music = []
 			current_count = 0
-			# break
+
+			mycursor.executemany(sql_update_music, val_update_music)
+			mydb.commit()
+			
 	except Exception as e:
-		print('loi roi, sleep 5s')
+		print('loi roi, sleep 5')
 		time.sleep(5)
 	
 # update last
 if current_count != 0:
 	mycursor.executemany(sql_update_music, val_update_music)
 	mydb.commit()
+
+end_time = time.time()
+print('total time: ' + str(end_time - start_time))
