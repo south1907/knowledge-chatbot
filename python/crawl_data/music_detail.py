@@ -126,15 +126,18 @@ for music in musics_indb:
 
 		if current_count > 10:
 
-			# reset 
-			val_update_music = []
-			current_count = 0
-
 			mycursor.executemany(sql_update_music, val_update_music)
 			mydb.commit()
+
+			# reset 
+			
+			val_update_music = []
+			current_count = 0
 			
 	except Exception as e:
 		print('loi roi, sleep 5')
+		val_update_music = []
+		current_count = 0
 		time.sleep(5)
 	
 # update last
