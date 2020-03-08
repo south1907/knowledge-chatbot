@@ -47,7 +47,10 @@ for music in musics_indb:
 		soup = BeautifulSoup(data, 'html.parser')
 
 		youtube = soup.find('a', {'class': 'play-button'})
-		youtube = youtube['href']
+		if youtube:
+			youtube = youtube['href']
+		else:
+			youtube = ''
 
 		rhythm = soup.find('span', {'id': 'display-rhythm'})
 		rhythm = rhythm.getText().strip()
