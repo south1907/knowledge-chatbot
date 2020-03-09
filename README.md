@@ -257,3 +257,16 @@ review_word DONE
 	}
 ]
 ```
+
+### REcheck database musics
+- remove mashup: 
+```delete FROM `musics` WHERE name like '%mashup%'```
+- remove duplicate by `link_origin`
+```
+SELECT id, link_origin FROM musics WHERE link_origin in (
+SELECT link_origin FROM `musics` 
+GROUP by link_origin
+HAVING count(1) > 1)
+```
+- trim: &nbsp
+- unidecode name_short
