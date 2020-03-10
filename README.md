@@ -270,3 +270,23 @@ HAVING count(1) > 1)
 ```
 - trim: &nbsp
 - unidecode name_short
+
+```
+[
+	{
+		"type": "postback",
+		"title": "Đoán tên bài hát",
+		"payload": "INTENT::music_game|NAME_SONG"
+	},
+	{
+		"type": "postback",
+		"title": "Đoán câu hát tiếp theo",
+		"payload": "INTENT::review_word|NEXT_SENTENCE"
+	},
+	{
+		"type": "postback",
+		"title": "Xem thông tin bài hát",
+		"payload": "INTENT::review_word|INFO_SONG"
+	}
+]
+```
