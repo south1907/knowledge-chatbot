@@ -100,12 +100,13 @@ for music in musics_indb:
 
 			class_item = item['class']
 
-			if 'empty_line' in class_item or 'text_only' in class_item:
+			if 'empty_line' in class_item:
 				continue
+
 
 			sentence = item.getText().strip()
 
-			sentence_no_chord = re.sub("\[.{1,5}\]", "", sentence)
+			sentence_no_chord = re.sub("\[.{1,6}\]", "", sentence)
 			arr_sentence.append(sentence)
 
 			# lower
@@ -114,11 +115,36 @@ for music in musics_indb:
 			# remove 1. 2. in first sentence
 			sentence_no_chord = re.sub("(\d)+\.", "", sentence_no_chord)
 
+			# replace . ,
+			sentence_no_chord = sentence_no_chord.replace(',', ' ')
+			sentence_no_chord = sentence_no_chord.replace('.', ' ')
+			sentence_no_chord = sentence_no_chord.replace('…', ' ')
+			sentence_no_chord = sentence_no_chord.replace('“', ' ')
+			sentence_no_chord = sentence_no_chord.replace('”', ' ')
+			sentence_no_chord = sentence_no_chord.replace('–', ' ')
+			sentence_no_chord = sentence_no_chord.replace('àh', 'à')
+			sentence_no_chord = sentence_no_chord.replace('nhìu', 'nhiều')
+
+			if 'text_only' in class_item:
+				# if sentence_no_chord have : or ***
+				if ':' in sentence_no_chord or '***' in sentence_no_chord or sentence_no_chord == '':
+					continue
+
+				split_sentence = sentence_no_chord.split(' ')
+
+				# if sentence have > 2 word
+				if len(split_sentence) < 2:
+					continue
+
 			# remove punctuation
 			sentence_no_chord = re.sub('[%s]' % re.escape(string.punctuation), '', sentence_no_chord)
 
 			# replace two space
 			sentence_no_chord = sentence_no_chord.replace('  ', ' ')
+			sentence_no_chord = sentence_no_chord.replace('  ', ' ')
+			sentence_no_chord = sentence_no_chord.replace('x2', '')
+			sentence_no_chord = sentence_no_chord.strip()
+
 			arr_sentence_no_chord.append(sentence_no_chord.strip())
 
 		temp_val = (name, name_short, "\n".join(arr_sentence_no_chord), "\n".join(arr_sentence), note_chord_str, rhythm, youtube, 1, id_music)
