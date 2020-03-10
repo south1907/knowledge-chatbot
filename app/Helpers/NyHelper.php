@@ -60,19 +60,34 @@ class NyHelper extends KnowledgeHelper
 				}
 
 				if (!is_null($current_intent)) {
-					$answers = $current_intent->answers->toArray();
 
-					$answers = array_filter($answers, function($item) use (&$page_id)  {
-					  	return $item['page_id'] == $page_id && $item['state'] == NULL;
-					});
+					$is_special = false;
 
-					if (count($answers) > 0) {
-						$rand = array_rand($answers);
+					if ($session && $session->intent_name == 'music_game') {
+						if ($current_intent->name != 'stop_music_game') {
+							
+							$result = MusicIntentHelper::process($session, $PID, $page_id, $sentence);
 
-						$result[] = $answers[$rand];
-
-						IntentHelper::updateSession($session, $PID, $current_intent->name, NULL, NULL);
+							$is_special = true;
+						}
 					}
+
+					if (!$is_special) {
+						$answers = $current_intent->answers->toArray();
+
+						$answers = array_filter($answers, function($item) use (&$page_id)  {
+						  	return $item['page_id'] == $page_id && $item['state'] == NULL;
+						});
+
+						if (count($answers) > 0) {
+							$rand = array_rand($answers);
+
+							$result[] = $answers[$rand];
+
+							IntentHelper::updateSession($session, $PID, $current_intent->name, NULL, NULL);
+						}
+					}
+					
 				} else {
 					if ($session) {
 						if ($session->intent_name == 'learn_word') {
@@ -85,6 +100,12 @@ class NyHelper extends KnowledgeHelper
 
 							$sentence = $query['content'];
 							$result = KanjiIntentHelper::intentReviewWord($session, $PID, $page_id, $sentence);
+						}
+
+						if ($session->intent_name == 'music_game') {
+
+							$sentence = $query['content'];
+							$result = MusicIntentHelper::process($session, $PID, $page_id, $sentence);
 						}
 					}
 
@@ -127,6 +148,7 @@ class NyHelper extends KnowledgeHelper
 						$is_special = true;
 					}
 
+					// other intent
 					if (!$is_special) {
 						$intent_split = explode("|", $intent_string);
 
