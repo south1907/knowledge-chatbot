@@ -281,12 +281,12 @@ HAVING count(1) > 1)
 	{
 		"type": "postback",
 		"title": "Đoán câu hát tiếp theo",
-		"payload": "INTENT::review_word|NEXT_SENTENCE"
+		"payload": "INTENT::music_game|NEXT_SENTENCE"
 	},
 	{
 		"type": "postback",
 		"title": "Xem thông tin bài hát",
-		"payload": "INTENT::review_word|INFO_SONG"
+		"payload": "INTENT::music_game|INFO_SONG"
 	}
 ]
 ```

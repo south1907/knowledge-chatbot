@@ -43,7 +43,7 @@ class MusicIntentHelper extends IntentHelper
 						$check = strpos($sen, $sentence);
 						if ($check !== FALSE) {
 							if (strlen($sen) > strlen($sentence)) {
-								$result = substr($sen, strlen($sentence));
+								$result = substr($sen, $check + strlen($sentence));
 								break;
 							} else {
 								if ($count < $max_sen) {
