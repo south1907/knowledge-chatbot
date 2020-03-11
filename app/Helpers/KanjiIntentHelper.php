@@ -186,11 +186,16 @@ class KanjiIntentHelper extends IntentHelper
 		// TODO Process with SYSTEM, need find lesson --> create slot
 		if ($session->addition == 'SYSTEM' || $session->addition ==  'WAIT_LESSON') {
 
-			$re = '/(bài|bài số) (\d)/im';
+			$number_lesson = 0;
+
+			if (is_numeric($sentence)) {
+				$number_lesson = $sentence;
+			}
+
+			$re = '/(bài|bài số) (\d+)/im';
 
 			preg_match_all($re, $sentence, $matches_lesson, PREG_SET_ORDER, 0);
 
-			$number_lesson = 0;
 			if (count($matches_lesson)) {
 				$number_lesson = $matches_lesson[0][2];
 			}
