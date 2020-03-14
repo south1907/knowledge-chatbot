@@ -59,8 +59,6 @@ class NyHelper extends KnowledgeHelper
 					}
 				}
 
-				$sentence = $query['content'];
-
 				if (!is_null($current_intent)) {
 
 					$is_special = false;
@@ -68,7 +66,7 @@ class NyHelper extends KnowledgeHelper
 					if ($session && $session->intent_name == 'music_game') {
 						if ($current_intent->name != 'stop_music_game') {
 
-							$result = MusicIntentHelper::process($session, $PID, $page_id, $sentence);
+							$result = MusicIntentHelper::process($session, $PID, $page_id, $message);
 
 							$is_special = true;
 						}
@@ -94,17 +92,17 @@ class NyHelper extends KnowledgeHelper
 					if ($session) {
 						if ($session->intent_name == 'learn_word') {
 
-							$result = KanjiIntentHelper::intentLearnWord($session, $PID, $page_id, $sentence);
+							$result = KanjiIntentHelper::intentLearnWord($session, $PID, $page_id, $message);
 						}
 
 						if ($session->intent_name == 'review_word') {
 
-							$result = KanjiIntentHelper::intentReviewWord($session, $PID, $page_id, $sentence);
+							$result = KanjiIntentHelper::intentReviewWord($session, $PID, $page_id, $message);
 						}
 
 						if ($session->intent_name == 'music_game') {
 
-							$result = MusicIntentHelper::process($session, $PID, $page_id, $sentence);
+							$result = MusicIntentHelper::process($session, $PID, $page_id, $message);
 						}
 					}
 
