@@ -32,4 +32,13 @@ class FbAnswer
 			]
 		];
 	}
+
+	public function setAttachmentMessage($type, $attachment) {
+		$this->message = [
+			'attachment'	=>	[
+				'type'		=>	$type,
+				'payload' 	=>	$attachment
+			]
+		];
+	}
 }

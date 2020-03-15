@@ -290,3 +290,28 @@ HAVING count(1) > 1)
 	}
 ]
 ```
+
+Attachment
+```
+{
+    "recipient_id": "2756500614416883",
+    "message_id": "m_EFDgtpS6X2sHfdqcig15s1g7muOG2BeJ6PFPqtlJdqZTHkmWzM1ROItAwvP_AESEHW1-lkCg2ngMD0hrzDg_eA",
+    "attachment_id": "611068736409219"
+}
+
+{
+  "recipient":{
+    "id":"2756500614416883"
+  },
+  "messaging_type": "response",
+  "message":{
+    "attachment":{
+      "type":"audio", 
+      "payload":{
+        "url":"https://translate.google.com/translate_tts?ie=UTF-8&q=xin%20ch%C3%A0o%20b%E1%BA%A1n&tl=vi&total=1&idx=0&textlen=12&tk=561568.927394&client=webapp&prev=input", 
+        "is_reusable":true
+      }
+    }
+  }
+}
+```

@@ -4,11 +4,14 @@ namespace App\Helpers;
 use GuzzleHttp\Client;
 use App\Models\Log;
 use App\Models\User;
+use App\Models\Attachment;
+
 use App\Models\Fb\FbAnswer;
 use App\Models\Fb\TextMessage;
 use App\Models\Fb\ButtonMessage;
 use App\Models\Fb\ButtonTemplate;
 use App\Models\Fb\AudioMessage;
+use App\Models\Fb\AttachmentMessage;
 
 use App\Helpers\TTS\GoogleTTS;
 
@@ -82,7 +85,7 @@ abstract class KnowledgeHelper
 			}
 
 			$objData = new FbAnswer($sender);
-			
+
 			foreach ($answers as $answer) {
 				$jsonData = "";
 
@@ -101,13 +104,44 @@ abstract class KnowledgeHelper
 
 				if ($answer['type'] == 'audio') {
 					$voice = $answer['message'];
-					$urlVoice = GoogleTTS::getLinkTTS($voice);
 
-					$audio = new AudioMessage($urlVoice);
-					$objData->setAudioMessage($audio);
+					$attachment = Attachment::where([
+						'message'	=>	$voice,
+						'type'	=>	'audio'
+					])->first();
+
+					if ($attachment) {
+						$attachmentMessage = new AttachmentMessage($attachment->attachment_id);
+
+						$objData->setAttachmentMessage('audio', $attachmentMessage);
+
+					} else {
+						// don't have attachment saved before ==> use google TTS
+						$urlVoice = GoogleTTS::getLinkTTS($voice);
+
+						$audio = new AudioMessage($urlVoice);
+						$objData->setAudioMessage($audio);
+					}
+
 					$jsonData = json_encode($objData);
-					CurlHelper::send($url, $jsonData);
-					
+					$response = CurlHelper::send($url, $jsonData);
+
+					if (!$attachment) {
+
+						$resData = json_decode($response->getBody()->getContents(), true);
+
+						if (array_key_exists('attachment_id', $resData)) {
+
+							// save attachment db
+							$newAttach = new Attachment;
+							$newAttach->attachment_id = $resData['attachment_id'];
+							$newAttach->message = $voice;
+							$newAttach->type = 'audio';
+							$newAttach->url = $urlVoice;
+
+							$newAttach->save();
+						}
+					}
 				}
 
 				if ($answer['type'] == 'button') {
