@@ -10,7 +10,7 @@ use App\Helpers\KanjiIntentHelper;
 class NyHelper extends KnowledgeHelper
 {
 	public static function answer($query, $page_id, $PID) {
-
+		
 		$result = [];
 
 		$current_intent = null;

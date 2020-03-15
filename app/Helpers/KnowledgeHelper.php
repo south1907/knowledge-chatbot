@@ -8,6 +8,9 @@ use App\Models\Fb\FbAnswer;
 use App\Models\Fb\TextMessage;
 use App\Models\Fb\ButtonMessage;
 use App\Models\Fb\ButtonTemplate;
+use App\Models\Fb\AudioMessage;
+
+use App\Helpers\TTS\GoogleTTS;
 
 abstract class KnowledgeHelper
 {
@@ -79,7 +82,7 @@ abstract class KnowledgeHelper
 			}
 
 			$objData = new FbAnswer($sender);
-
+			
 			foreach ($answers as $answer) {
 				$jsonData = "";
 
@@ -94,6 +97,17 @@ abstract class KnowledgeHelper
 							CurlHelper::send($url, $jsonData);
 						}
 					}
+				}
+
+				if ($answer['type'] == 'audio') {
+					$voice = $answer['message'];
+					$urlVoice = GoogleTTS::getLinkTTS($voice);
+
+					$audio = new AudioMessage($urlVoice);
+					$objData->setAudioMessage($audio);
+					$jsonData = json_encode($objData);
+					CurlHelper::send($url, $jsonData);
+					
 				}
 
 				if ($answer['type'] == 'button') {

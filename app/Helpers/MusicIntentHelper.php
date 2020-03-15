@@ -6,7 +6,7 @@ use App\Models\Music;
 class MusicIntentHelper extends IntentHelper
 {
 	public static function process($session, $PID, $page_id, $sentence) {
-		$result = 'bài gì đó...';
+		$result = 'anh xin giơ tay rút lui thôi';
 
 		$type = 'NAME_SONG';
 
@@ -62,6 +62,11 @@ class MusicIntentHelper extends IntentHelper
 			[
 				'id'	=>	null,
 				'type'	=>	'text',
+				'message'	=>	$result
+			],
+			[
+				'id'	=>	null,
+				'type'	=>	'audio',
 				'message'	=>	$result
 			]
 		];

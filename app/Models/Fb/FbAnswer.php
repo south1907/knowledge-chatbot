@@ -23,4 +23,13 @@ class FbAnswer
 			]
 		];
 	}
+
+	public function setAudioMessage($audio) {
+		$this->message = [
+			'attachment'	=>	[
+				'type'		=>	'audio',
+				'payload' 	=>	$audio
+			]
+		];
+	}
 }
