@@ -26,15 +26,8 @@ class NyHelper extends KnowledgeHelper
 				$checkSing = SingIntentHelper::checkIntent($message);
 				if ($checkSing) {
 
-					SingIntentHelper::sing($message);
-					$result = [
-						[
-							'id'	=>	null,
-							'type'	=>	'text',
-							'message'	=>	'sing my song'
-						]
-					];
-
+					$result = SingIntentHelper::sing($message);
+					
 					return $result;
 				}
 
