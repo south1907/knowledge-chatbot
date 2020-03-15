@@ -24,12 +24,22 @@ class SingIntentHelper
 	}
 
 	public static function sing($message) {
+
+		$result = [
+			[
+				'id'	=>	null,
+				'type'	=>	'text',
+				'message'	=>	'Em không biết hát'
+			]
+		];
+
 		try {
 			$pat = "(hát bài|hát) (.*) đi";
 			$pat = "/" . $pat . "/";
 			if (preg_match($pat, $message, $matches, PREG_OFFSET_CAPTURE)) {
 				$song = $matches[2][0];
-				// print_r($song);
+
+				$song = trim($song);
 
 				$music = Music::where('name', 'like', '%' . $song . '%')->first();
 
@@ -80,16 +90,11 @@ class SingIntentHelper
 							'url'	=>	$fullPath
 						]
 					];
+					// print_r($result);die;
 				}
 			}
 		} catch (\Exception $e) {
-			$result = [
-				[
-					'id'	=>	null,
-					'type'	=>	'text',
-					'message'	=>	'Sorry'
-				]
-			];
+			
 		}
 
 		return $result;
