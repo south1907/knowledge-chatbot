@@ -116,8 +116,12 @@ abstract class KnowledgeHelper
 						$objData->setAttachmentMessage('audio', $attachmentMessage);
 
 					} else {
-						// don't have attachment saved before ==> use google TTS
-						$urlVoice = GoogleTTS::getLinkTTS($voice);
+						if (array_key_exists('url', $answer)) {
+							$urlVoice = $answer['url'];
+						} else {
+							// don't have attachment saved before ==> use google TTS
+							$urlVoice = GoogleTTS::getLinkTTS($voice);
+						}
 
 						$audio = new AudioMessage($urlVoice);
 						$objData->setAudioMessage($audio);

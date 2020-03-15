@@ -315,3 +315,12 @@ Attachment
   }
 }
 ```
+
+Sing intent 
+
+```
+(hát|hát bài) (.*) đi
+```
+
+message
+```hát bài chúc mừng sinh nhật đi```

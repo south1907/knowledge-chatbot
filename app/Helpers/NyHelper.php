@@ -4,6 +4,8 @@ namespace App\Helpers;
 use App\Models\Intent;
 use App\Models\Session;
 
+use App\Helpers\SingIntentHelper;
+
 use App\Helpers\IntentHelper;
 use App\Helpers\KanjiIntentHelper;
 
@@ -20,6 +22,21 @@ class NyHelper extends KnowledgeHelper
 		if (array_key_exists('type', $query)) {
 			if ($query['type'] == 'text') {
 				$message = mb_strtolower($query['content']);
+
+				$checkSing = SingIntentHelper::checkIntent($message);
+				if ($checkSing) {
+
+					SingIntentHelper::sing($message);
+					$result = [
+						[
+							'id'	=>	null,
+							'type'	=>	'text',
+							'message'	=>	'sing my song'
+						]
+					];
+
+					return $result;
+				}
 
 				$intents = Intent::with('answers')->where('page_id', $page_id)->get();
 				
