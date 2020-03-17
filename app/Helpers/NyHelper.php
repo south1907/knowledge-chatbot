@@ -30,7 +30,7 @@ class NyHelper extends KnowledgeHelper
 					return $resultSing;
 				}
 
-				$resultCommand = CommandIntentHelper::sing($message);
+				$resultCommand = CommandIntentHelper::command($message);
 				if ($resultCommand != null) {
 					
 					return $resultCommand;
