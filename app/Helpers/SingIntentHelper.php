@@ -8,20 +8,6 @@ use App\Models\Music;
 
 class SingIntentHelper
 {
-	public static function checkIntent($message) {
-		try {
-			$pat = "(hát bài|hát) (.*) đi";
-			$pat = "/" . $pat . "/";
-			if (preg_match($pat, $message, $matches, PREG_OFFSET_CAPTURE)) {
-				return true;
-			}
-		} catch (\Exception $e) {
-			// print($e->getMessage());
-			return false;
-		}
-
-		return false;
-	}
 
 	public static function sing($message) {
 
@@ -91,6 +77,8 @@ class SingIntentHelper
 						]
 					];
 				}
+			} else {
+				return null;
 			}
 		} catch (\Exception $e) {
 			

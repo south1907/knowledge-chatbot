@@ -5,6 +5,7 @@ use App\Models\Intent;
 use App\Models\Session;
 
 use App\Helpers\SingIntentHelper;
+use App\Helpers\CommandIntentHelper;
 
 use App\Helpers\IntentHelper;
 use App\Helpers\KanjiIntentHelper;
@@ -23,12 +24,16 @@ class NyHelper extends KnowledgeHelper
 			if ($query['type'] == 'text') {
 				$message = mb_strtolower($query['content']);
 
-				$checkSing = SingIntentHelper::checkIntent($message);
-				if ($checkSing) {
-
-					$result = SingIntentHelper::sing($message);
+				$resultSing = SingIntentHelper::sing($message);
+				if ($resultSing != null) {
 					
-					return $result;
+					return $resultSing;
+				}
+
+				$resultCommand = CommandIntentHelper::sing($message);
+				if ($resultCommand != null) {
+					
+					return $resultCommand;
 				}
 
 				$intents = Intent::with('answers')->where('page_id', $page_id)->get();
