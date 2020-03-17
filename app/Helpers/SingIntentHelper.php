@@ -41,7 +41,7 @@ class SingIntentHelper
 
 				$song = trim($song);
 
-				$music = Music::where('name', 'like', '%' . $song . '%')->first();
+				$music = Music::where('name', $song)->first();
 
 				if ($music) {
 					$nameMusic = $music->name;
@@ -90,7 +90,6 @@ class SingIntentHelper
 							'url'	=>	$fullPath
 						]
 					];
-					// print_r($result);die;
 				}
 			}
 		} catch (\Exception $e) {
