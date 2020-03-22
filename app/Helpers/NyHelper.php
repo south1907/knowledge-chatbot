@@ -4,6 +4,7 @@ namespace App\Helpers;
 use App\Models\Intent;
 use App\Models\Session;
 
+use App\Helpers\Intent\IfElseIntentHelper;
 use App\Helpers\Intent\SingIntentHelper;
 use App\Helpers\Intent\CommandIntentHelper;
 
@@ -23,6 +24,19 @@ class NyHelper extends KnowledgeHelper
 		if (array_key_exists('type', $query)) {
 			if ($query['type'] == 'text') {
 				$message = mb_strtolower($query['content']);
+
+				//find fixed
+				$resultFixed = IfElseIntentHelper::find($message, $PID, $page_id);
+				if ($resultFixed != null) {
+					
+					return $resultFixed;
+				}
+
+				$resultIfElse = IfElseIntentHelper::process($message, $PID, $page_id);
+				if ($resultIfElse != null) {
+					
+					return $resultIfElse;
+				}
 
 				$resultSing = SingIntentHelper::sing($message);
 				if ($resultSing != null) {
