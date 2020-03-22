@@ -1,5 +1,5 @@
 <?php
-namespace App\Helpers;
+namespace App\Helpers\Intent;
 
 use App\Helpers\TTS\GoogleTTS;
 use App\Helpers\TTS\PHPMP3;
