@@ -4,11 +4,11 @@ namespace App\Helpers;
 use App\Models\Intent;
 use App\Models\Session;
 
-use App\Helpers\SingIntentHelper;
-use App\Helpers\CommandIntentHelper;
+use App\Helpers\Intent\SingIntentHelper;
+use App\Helpers\Intent\CommandIntentHelper;
 
-use App\Helpers\IntentHelper;
-use App\Helpers\KanjiIntentHelper;
+use App\Helpers\Intent\IntentHelper;
+use App\Helpers\Intent\KanjiIntentHelper;
 
 class NyHelper extends KnowledgeHelper
 {
