@@ -105,11 +105,6 @@ class IfElseIntentHelper
 							'id'	=>	null,
 							'type'	=>	'text',
 							'message'	=>	'ok'
-						],
-						[
-							'id'	=>	null,
-							'type'	=>	'audio',
-							'message'	=>	'ok'
 						]
 					];
 
