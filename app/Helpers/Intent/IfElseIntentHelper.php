@@ -45,9 +45,9 @@ class IfElseIntentHelper
 		try {
 			$flag = false;
 
-			$pat1 = "nếu (bố|mẹ|anh|em|con|bác|chú) (bảo|nói) là (.*) thì (bố|mẹ|anh|em|con|bác|chú) (bảo|nói) là (.*) thì .* (bố|mẹ|anh|em|con|bác|chú) (.*) cho";
+			$pat1 = "nếu (bố|mẹ|anh|em|con|bác|chú|ta) (bảo là|nói là|hỏi là|bảo|nói|hỏi) (.*) thì (bố|mẹ|anh|em|con|bác|chú|nhà ngươi|ngươi) (phải bảo là|phải nói là|bảo là|nói là|bảo|nói) (.*) thì .* (bố|mẹ|anh|em|con|bác|chú) (.*) cho";
 
-			$pat2 = "nếu (bố|mẹ|anh|em|con|bác|chú|ta) (bảo|nói) là (.*) thì (bố|mẹ|anh|em|con|bác|chú|nhà ngươi|ngươi) (bảo|nói) là (.*) nhé";
+			$pat2 = "nếu (bố|mẹ|anh|em|con|bác|chú|ta) (bảo là|nói là|hỏi là|bảo|nói|hỏi) (.*) thì (bố|mẹ|anh|em|con|bác|chú|nhà ngươi|ngươi) (phải bảo là|phải nói là|bảo là|nói là|bảo|nói) (.*) nhé";
 
 
 			$pat1 = "/" . $pat1 . "/";
