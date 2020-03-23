@@ -7,6 +7,7 @@ use App\Models\Session;
 use App\Helpers\Intent\IfElseIntentHelper;
 use App\Helpers\Intent\SingIntentHelper;
 use App\Helpers\Intent\CommandIntentHelper;
+use App\Helpers\Intent\MusicIntentHelper;
 
 use App\Helpers\Intent\IntentHelper;
 use App\Helpers\Intent\KanjiIntentHelper;
