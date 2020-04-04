@@ -16,10 +16,8 @@ class ZaloHelper
 		$url = 'https://friend-wpa.chat.zalo.me/api/friend/profile/get';
 
 		$response = CurlHelper::getZalo($url, $req_data);
-		print_r('heheh');
-		print_r($response);
-		die;
-		return $resData;
+		
+		return $response;
 	}
 }
 
