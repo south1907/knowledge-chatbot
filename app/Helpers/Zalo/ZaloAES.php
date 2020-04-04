@@ -19,7 +19,7 @@ abstract class ZaloAES
 	    if ($o) {
 	        $s = strpos($e, $o);
 
-	        if ($s != -1) {
+	        if ($s != 0) {
 	        	$t = $s;
 	        }
 	    }
