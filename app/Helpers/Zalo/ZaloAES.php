@@ -4,7 +4,7 @@ namespace App\Helpers\Zalo;
 
 abstract class ZaloAES
 {
-	protected static $_key = 'U0IkYQmnHqRRTPBB7cXAog==';
+	protected static $_key;
 	protected static $_prevBlock = null;
 	protected static $_iv = [0, 0, 0, 0];
 	protected static $_keySchedule = [];
@@ -17,9 +17,9 @@ abstract class ZaloAES
 
 	    $o = substr($r, 64, 1);
 	    if ($o) {
-	        $s = strrpos($e, $o) - 1;
+	        $s = strpos($e, $o);
 
-	        if ($s) {
+	        if ($s != -1) {
 	        	$t = $s;
 	        }
 	    }
@@ -42,7 +42,6 @@ abstract class ZaloAES
 
 	        } 
 	    }
-	        
 	    return [
 	    	'words'	=> $a,
 	    	'sigBytes'	=> $i
@@ -128,7 +127,6 @@ abstract class ZaloAES
 	public static function unpad($e) {
 	    $t = (255 & $e['words'][self::zerofill($e['sigBytes'] - 1, 2)]);
 	    $e['sigBytes'] -= $t;
-
 	    return $e;
 	}
 
@@ -155,11 +153,16 @@ abstract class ZaloAES
 	}
 
 	public static function doAES($str) {
-		$parseKey = self::parseKey (self::$_key);
+		self::$_key = env('KEY_ZALO', '');
+		$parseKey = self::parseKey(self::$_key);
 		self::setKeySchedule($parseKey);
 		$data = static::doFinalize($str);
 
 		$result = static::stringify($data);
+
+		//set null
+		self::$_prevBlock = null;
+		self::$_iv = [0, 0, 0, 0];
 
 		return $result;
 	}
@@ -171,6 +174,7 @@ abstract class ZaloAES
         $s = ceil($a / (4 * $i)) * $i;
         $l = $s;
         $u = min(4 * $l, $a);
+        
 	    if ($l) {
 	        for ($c = 0; $c < $l; $c += $i) {
 	        	$r = static::processBlock($r, $c);

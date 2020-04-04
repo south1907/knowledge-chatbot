@@ -24,6 +24,17 @@ class ZaloEncode extends ZaloAES
 
 	}
 
+	public static function processBlock($e, $t) {
+	    $a = 4; //blockSize
+
+	    $e = self::ncall($e, $t, $a);
+	    $e = static::doCryptBlock($e, $t);
+	    $bk_e = $e;
+
+	    self::$_prevBlock = array_splice($bk_e,$t, $a);
+	    return $e;
+	}
+
 	public static function doCryptBlock($e, $t) {
 	    $_nRounds = 10;
 	    $n = self::$_keySchedule;
