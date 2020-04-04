@@ -28,3 +28,10 @@ Route::prefix('api')->group(function () {
 	});
 
 });
+
+Route::prefix('test')->group(function () {
+    
+    Route::get('', 'TestController@index')->name('test');
+    Route::get('zalo', 'TestController@zalo')->name('test.zalo');
+
+});
