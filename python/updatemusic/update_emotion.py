@@ -1,3 +1,4 @@
+ # -*- coding: utf-8 -*-
 import json
 import mysql.connector
 import time
@@ -36,12 +37,24 @@ for music in musics_indb:
 	title = music[1].lower()
 	id_music = music[0]
 	print(title)
-	for w in title.split(" "):
-		
-		if w in one_word:
-			if w not in result:
-				result[w] = 0
-			result[w] += 10
+	split_title = title.split(" ")
+	for i in range(0, len(split_title)):
+		one = split_title[i]
+		if one in one_word:
+			if one == 'khóc':
+				one = 'buồn'
+			if one not in result:
+				result[one] = 0
+			result[one] += 10
+
+		if i < len(split_title) - 1:
+			two = split_title[i] + " " + split_title[i + 1]
+			if two in two_word:
+				if two == 'tạm biệt':
+					two = 'chia tay'
+				if two not in result:
+					result[two] = 0
+				result[two] += 20
 	
 
 	sentences = music[2].split("\n")

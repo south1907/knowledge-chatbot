@@ -26,7 +26,7 @@ class RecommendMusicHelper
 					if ($emotion) {
 						$mes = $emotion . ' à, nghe bài "' . $music->name . '"" đi';
 					} else {
-						$mes = 'nghe bài "' . $music->name . '"" đi';
+						$mes = 'nghe bài "' . $music->name . '" đi';
 					}
 					$result[] = [
 						'id'	=>	null,
