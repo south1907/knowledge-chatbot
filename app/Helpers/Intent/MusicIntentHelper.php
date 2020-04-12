@@ -6,7 +6,7 @@ use App\Models\Music;
 class MusicIntentHelper extends IntentHelper
 {
 	public static function process($session, $PID, $page_id, $sentence) {
-		$result = 'anh xin giơ tay rút lui thôi';
+		$result = [];
 
 		$type = 'NAME_SONG';
 
@@ -18,16 +18,36 @@ class MusicIntentHelper extends IntentHelper
 			$music = Music::where('name', 'like', '%' . $sentence . '%')->first();
 
 			if ($music) {
-				$result = $music->name;
+				$result[] = [
+						'id'	=>	null,
+						'type'	=>	'button',
+						'message'	=>	$music->name,
+						'buttons' => json_encode([
+							[
+								"type"		=> "web_url",
+								"url"		=> $music->youtube,
+								"title"		=> "Nghe nhạc",
+								"messenger_extensions"	=> true
+
+							],
+							[
+								"type"		=> "web_url",
+								"url"		=> $music->link_origin,
+								"title"		=> "Hợp âm",
+								"messenger_extensions"	=> true
+							]
+						])
+					];
 			}
 
 		} else {
+			$mesage = 'anh xin giơ tay rút lui thôi';
 			$music = Music::where('content', 'like', '%' . $sentence . '%')->first();
 
 			if ($music) {
 				
 				if ($type == 'NAME_SONG') {
-					$result = $music->name;
+					$mesage = $music->name;
 				}
 				if ($type == 'NEXT_SENTENCE') {
 					$content = $music->content;
@@ -43,32 +63,34 @@ class MusicIntentHelper extends IntentHelper
 						$check = strpos($sen, $sentence);
 						if ($check !== FALSE) {
 							if (strlen($sen) > $check + strlen($sentence)) {
-								$result = substr($sen, $check + strlen($sentence));
+								$mesage = substr($sen, $check + strlen($sentence));
 								break;
 							} else {
 								if ($count < $max_sen) {
-									$result = $content_split[$count];
+									$mesage = $content_split[$count];
 								} else {
-									$result = 'Hết';
+									$mesage = 'Hết';
 								}
 							}
 						}
 					}
 				}
 			}
+
+			$result = [
+				[
+					'id'	=>	null,
+					'type'	=>	'text',
+					'message'	=>	$mesage
+				],
+				[
+					'id'	=>	null,
+					'type'	=>	'audio',
+					'message'	=>	$mesage
+				]
+			];
 		}
 		
-		return [
-			[
-				'id'	=>	null,
-				'type'	=>	'text',
-				'message'	=>	$result
-			],
-			[
-				'id'	=>	null,
-				'type'	=>	'audio',
-				'message'	=>	$result
-			]
-		];
+		return $result;
 	}
 }
