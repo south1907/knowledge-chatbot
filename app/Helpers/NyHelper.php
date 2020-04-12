@@ -8,6 +8,7 @@ use App\Helpers\Intent\IfElseIntentHelper;
 use App\Helpers\Intent\SingIntentHelper;
 use App\Helpers\Intent\CommandIntentHelper;
 use App\Helpers\Intent\MusicIntentHelper;
+use App\Helpers\Intent\RecommendMusicHelper;
 
 use App\Helpers\Intent\IntentHelper;
 use App\Helpers\Intent\KanjiIntentHelper;
@@ -29,14 +30,18 @@ class NyHelper extends KnowledgeHelper
 				//find fixed
 				$resultFixed = IfElseIntentHelper::find($message, $PID, $page_id);
 				if ($resultFixed != null) {
-					
 					return $resultFixed;
 				}
 
 				$resultIfElse = IfElseIntentHelper::process($message, $PID, $page_id);
 				if ($resultIfElse != null) {
-					
 					return $resultIfElse;
+				}
+
+				//recommend music
+				$resultRecommnend = RecommendMusicHelper::recommend($message);
+				if ($resultRecommnend != null) {
+					return $resultRecommnend;
 				}
 
 				$resultSing = SingIntentHelper::sing($message);
