@@ -15,15 +15,23 @@ class RecommendMusicHelper
 			$pat = "/" . $pat . "/";
 			if (preg_match($pat, $message, $matches, PREG_OFFSET_CAPTURE)) {
 
-				$music = self::find($message);
+				$find = self::find($message);
+				$music = $find['music'];
+				$emotion = $find['emotion'];
 
 				if ($music) {
 					$link_music = $music->youtube;
 					$link_music = str_replace('http:', 'https:', $link_music);
+
+					if ($emotion) {
+						$mes = $emotion . ' à, nghe bài "' . $music->name . '"" đi';
+					} else {
+						$mes = 'nghe bài "' . $music->name . '"" đi';
+					}
 					$result[] = [
 						'id'	=>	null,
 						'type'	=>	'button',
-						'message'	=>	$music->name,
+						'message'	=>	$mes,
 						'buttons' => json_encode([
 							[
 								"type"		=> "web_url",
@@ -80,6 +88,9 @@ class RecommendMusicHelper
 			$music = Music::limit(100)->get()->random(1);
 		}
 
-		return $music[0];
+		return [
+			'emotion'	=>	$emotion,
+			'music'		=>	$music[0]
+		];
 	}
 }
