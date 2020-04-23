@@ -26,15 +26,13 @@ class MusicIntentHelper extends IntentHelper
 							[
 								"type"		=> "web_url",
 								"url"		=> $music->youtube,
-								"title"		=> "Nghe nhạc",
-								"messenger_extensions"	=> true
+								"title"		=> "Nghe nhạc"
 
 							],
 							[
 								"type"		=> "web_url",
 								"url"		=> $music->link_origin,
-								"title"		=> "Hợp âm",
-								"messenger_extensions"	=> true
+								"title"		=> "Hợp âm"
 							]
 						])
 					];
