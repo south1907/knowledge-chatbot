@@ -140,9 +140,6 @@ class NyHelper extends KnowledgeHelper
 							$result = MusicIntentHelper::process($session, $PID, $page_id, $message);
 						}
 					}
-
-					
-
 				}
 			}
 

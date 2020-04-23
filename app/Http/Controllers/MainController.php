@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Helpers\XSMBHelper;
 use App\Helpers\NyHelper;
+use App\Helpers\LQHelper;
 
 class MainController extends Controller
 {
@@ -80,6 +81,7 @@ class MainController extends Controller
             
             $NY_PAGE_ID = env("NY_PAGE_ID", "");
             $XSMB_PAGE_ID = env("XSMB_PAGE_ID", "");
+            $LQ_PAGE_ID = env("LQ_PAGE_ID", "");
 
             if ($id_page == $NY_PAGE_ID) {
                 NyHelper::sendAnswer($input);
@@ -87,6 +89,10 @@ class MainController extends Controller
 
             if ($id_page == $XSMB_PAGE_ID) {
                 XSMBHelper::sendAnswer($input);
+            }
+
+            if ($id_page == $LQ_PAGE_ID) {
+                LQHelper::sendAnswer($input);
             }
             
         }
