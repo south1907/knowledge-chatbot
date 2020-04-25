@@ -24,11 +24,29 @@ class FbAnswer
 		];
 	}
 
+	public function setGenericMessage($generic) {
+		$this->message = [
+			'attachment'	=>	[
+				'type'		=>	'template',
+				'payload' 	=>	$generic
+			]
+		];
+	}
+
 	public function setAudioMessage($audio) {
 		$this->message = [
 			'attachment'	=>	[
 				'type'		=>	'audio',
 				'payload' 	=>	$audio
+			]
+		];
+	}
+
+	public function setImageMessage($image) {
+		$this->message = [
+			'attachment'	=>	[
+				'type'		=>	'image',
+				'payload' 	=>	$image
 			]
 		];
 	}

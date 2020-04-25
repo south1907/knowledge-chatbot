@@ -11,7 +11,9 @@ use App\Models\Fb\TextMessage;
 use App\Models\Fb\ButtonMessage;
 use App\Models\Fb\ButtonTemplate;
 use App\Models\Fb\AudioMessage;
+use App\Models\Fb\ImageMessage;
 use App\Models\Fb\AttachmentMessage;
+use App\Models\Fb\GenericMessage;
 
 use App\Helpers\TTS\GoogleTTS;
 
@@ -89,15 +91,23 @@ abstract class KnowledgeHelper
 				$jsonData = "";
 
 				if ($answer['type'] == 'text') {
-					$text_answers = explode("\n", $answer['message']);
 
-					foreach ($text_answers as $ans) {
-						if (!empty($ans)) {
-							$objData->setTextMessage($ans);
-							$jsonData = json_encode($objData);
+					if (!empty($answer['message'])) {
+						$objData->setTextMessage($answer['message']);
+						$jsonData = json_encode($objData);
 
-							CurlHelper::send($url, $jsonData);
-						}
+						CurlHelper::send($url, $jsonData);
+					}
+				}
+
+				if ($answer['type'] == 'image') {
+
+					if (!empty($answer['url'])) {
+						$image = new ImageMessage($answer['url']);
+						$objData->setImageMessage($image);
+
+						$jsonData = json_encode($objData);
+						CurlHelper::send($url, $jsonData);
 					}
 				}
 
@@ -150,6 +160,13 @@ abstract class KnowledgeHelper
 				if ($answer['type'] == 'button') {
 					$btn = new ButtonMessage('button', $answer['message'], json_decode($answer['buttons']));
 					$objData->setButtonMessage($btn);
+					$jsonData = json_encode($objData);
+					CurlHelper::send($url, $jsonData);
+				}
+
+				if ($answer['type'] == 'generic') {
+					$gen = new GenericMessage('generic', $answer['elements']);
+					$objData->setGenericMessage($gen);
 					$jsonData = json_encode($objData);
 					CurlHelper::send($url, $jsonData);
 				}
