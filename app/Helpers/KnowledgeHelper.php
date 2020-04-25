@@ -104,7 +104,7 @@ abstract class KnowledgeHelper
 
 					if (!empty($answer['url'])) {
 						$image = new ImageMessage($answer['url']);
-						$objData->setImageMessage($image);
+						$objData->setAttachmentMessage('image', $image);
 
 						$jsonData = json_encode($objData);
 						CurlHelper::send($url, $jsonData);
@@ -133,7 +133,7 @@ abstract class KnowledgeHelper
 						}
 
 						$audio = new AudioMessage($urlVoice);
-						$objData->setAudioMessage($audio);
+						$objData->setAttachmentMessage('audio', $audio);
 					}
 
 					$jsonData = json_encode($objData);
@@ -159,14 +159,14 @@ abstract class KnowledgeHelper
 
 				if ($answer['type'] == 'button') {
 					$btn = new ButtonMessage('button', $answer['message'], json_decode($answer['buttons']));
-					$objData->setButtonMessage($btn);
+					$objData->setAttachmentMessage('template', $btn);
 					$jsonData = json_encode($objData);
 					CurlHelper::send($url, $jsonData);
 				}
 
 				if ($answer['type'] == 'generic') {
 					$gen = new GenericMessage('generic', $answer['elements']);
-					$objData->setGenericMessage($gen);
+					$objData->setAttachmentMessage('template', $gen);
 					$jsonData = json_encode($objData);
 					CurlHelper::send($url, $jsonData);
 				}
