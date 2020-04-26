@@ -92,11 +92,23 @@ abstract class KnowledgeHelper
 
 				if ($answer['type'] == 'text') {
 
-					if (!empty($answer['message'])) {
-						$objData->setTextMessage($answer['message']);
-						$jsonData = json_encode($objData);
+					$message = $answer['message'];
 
-						CurlHelper::send($url, $jsonData);
+					$arrMes = [];
+					if (strlen($message) > 2000) {
+						$splitMes = explode("\n", $message);
+						$arrMes = $splitMes;
+					} else {
+						$arrMes = [$message];
+					}
+
+					foreach ($arrMes as $mes) {
+						if (!empty($mes)) {
+							$objData->setTextMessage($mes);
+							$jsonData = json_encode($objData);
+
+							CurlHelper::send($url, $jsonData);
+						}
 					}
 				}
 
