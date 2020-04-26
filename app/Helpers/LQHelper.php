@@ -132,6 +132,9 @@ class LQHelper extends KnowledgeHelper
 
 					$elements = [];
 					$count = 1;
+					if ($count > 11) {
+						break;
+					}
 					foreach ($skins as $skin) {
 
 						$buttons = [
