@@ -103,6 +103,7 @@ abstract class KnowledgeHelper
 					}
 
 					foreach ($arrMes as $mes) {
+						$mes = trim($mes);
 						if (!empty($mes)) {
 							$objData->setTextMessage($mes);
 							$jsonData = json_encode($objData);
