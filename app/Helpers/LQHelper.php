@@ -150,8 +150,8 @@ class LQHelper extends KnowledgeHelper
 						$el = new ElementTemplate($skin['name'], $skin['image'], $buttons);
 						$elements[] = $el;
 						$count += 1;
-						
-						if ($count > 11) {
+
+						if ($count > 10) {
 							break;
 						}
 					}
