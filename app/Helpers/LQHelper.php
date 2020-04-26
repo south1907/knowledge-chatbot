@@ -132,9 +132,7 @@ class LQHelper extends KnowledgeHelper
 
 					$elements = [];
 					$count = 1;
-					if ($count > 11) {
-						break;
-					}
+
 					foreach ($skins as $skin) {
 
 						$buttons = [
@@ -152,6 +150,10 @@ class LQHelper extends KnowledgeHelper
 						$el = new ElementTemplate($skin['name'], $skin['image'], $buttons);
 						$elements[] = $el;
 						$count += 1;
+						
+						if ($count > 11) {
+							break;
+						}
 					}
 
 					$result[] = [
