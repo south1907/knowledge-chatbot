@@ -22,7 +22,23 @@ class EntityDetection
 			if (self::checkContain($arrCheck, $sentence)) {
 				$result[] = $hero;
 			}
+		}
+		if (count($result) == 0) {
+			$currentMax = 0;
+			$tempResult = null;
+			foreach ($heros as $hero) {
+				$heroName = $hero['name'];
+				$heroName = strtolower(trim($heroName));
+				similar_text($heroName, $sentence, $perc);
+				if ($perc >= 50 && $perc > $currentMax) {
+					$currentMax = $perc;
+					$tempResult = $hero;
+				}
+			}
 
+			if ($tempResult != null) {
+				$result[] = $tempResult;
+			}
 		}
 
 		return $result;
