@@ -81,11 +81,19 @@ class LQHelper extends KnowledgeHelper
 				if (strpos($payload, 'LQ::story') !== false) {
 					$hero = Hero::find($id);
 
-					$result[] = [
-						'id'	=>	null,
-						'type'	=>	'audio2',
-						'content'	=>	$hero['story']
-					];
+					if (strlen($hero['story']) < 5000) {
+						$result[] = [
+							'id'	=>	null,
+							'type'	=>	'audio2',
+							'content'	=>	$hero['story']
+						];
+					} else {
+						$result[] = [
+							'id'	=>	null,
+							'type'	=>	'text',
+							'message'	=>	$hero['story']
+						];
+					}
 				}
 
 				if (strpos($payload, 'LQ::skill') !== false) {
