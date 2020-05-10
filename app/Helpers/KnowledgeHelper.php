@@ -98,7 +98,17 @@ abstract class KnowledgeHelper
 					$arrMes = [];
 					if (strlen($message) > 2000) {
 						$splitMes = explode("\n", $message);
-						$arrMes = $splitMes;
+
+						$tempMes = '';
+						foreach ($splitMes as $mes) {
+							if (strlen($tempMes) + strlen($mes) < 2000) {
+								$tempMes .= "\n" . $mes;
+							} else {
+								$arrMes[] = $tempMes;
+								$tempMes = $mes;
+							}
+						}
+
 					} else {
 						$arrMes = [$message];
 					}
