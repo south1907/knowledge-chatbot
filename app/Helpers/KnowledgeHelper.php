@@ -108,6 +108,7 @@ abstract class KnowledgeHelper
 								$tempMes = $mes;
 							}
 						}
+						$arrMes[] = $tempMes;
 
 					} else {
 						$arrMes = [$message];
