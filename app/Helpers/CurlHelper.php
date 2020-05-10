@@ -20,6 +20,19 @@ class CurlHelper
 		return $response;
 	}
 
+	public static function post($url, $data, $headers = null) {
+
+		$client = new Client([
+		    'headers' => $headers
+		]);
+
+		$response = $client->post($url,
+		    ['body' => $data]
+		);
+
+		return $response;
+	}
+
 	public static function get($url, $data, $headers = null) {
 
 		$client = new Client([

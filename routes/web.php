@@ -25,6 +25,9 @@ Route::prefix('api')->group(function () {
 	    // webhook facebook
 	    Route::get('webhook', 'MainController@verifyWebhook')->name('verifyWebhook');
 	    Route::post('webhook', 'MainController@webhook')->name('webhook');
+
+	    //voice
+	    Route::get('voice', 'VoiceController@index')->name('voice');
 	});
 
 });
