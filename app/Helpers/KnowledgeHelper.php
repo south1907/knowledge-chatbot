@@ -130,6 +130,9 @@ abstract class KnowledgeHelper
 					
 					$audio = new AudioMessage($urlVoice);
 					$objData->setAttachmentMessage('audio', $audio);
+
+					$jsonData = json_encode($objData);
+					$response = CurlHelper::send($url, $jsonData);
 				}
 
 				if ($answer['type'] == 'audio') {
