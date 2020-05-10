@@ -83,8 +83,8 @@ class LQHelper extends KnowledgeHelper
 
 					$result[] = [
 						'id'	=>	null,
-						'type'	=>	'text',
-						'message'	=>	$hero['story']
+						'type'	=>	'audio2',
+						'content'	=>	$hero['story']
 					];
 				}
 

@@ -10,7 +10,7 @@ class VoiceController extends Controller
     public function index(Request $request) {
 
         if ($request->has('message')) { 
-            $data = GoogleVoice::getAudio($request->get('message'));
+            $data = GoogleVoice::getUrlAudio($request->get('message'));
             return $data;
         }
     }

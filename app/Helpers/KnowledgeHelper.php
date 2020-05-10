@@ -16,6 +16,7 @@ use App\Models\Fb\AttachmentMessage;
 use App\Models\Fb\GenericMessage;
 
 use App\Helpers\TTS\GoogleTTS;
+use App\Helpers\TTS\GoogleVoice;
 
 abstract class KnowledgeHelper
 {
@@ -122,6 +123,13 @@ abstract class KnowledgeHelper
 						$jsonData = json_encode($objData);
 						CurlHelper::send($url, $jsonData);
 					}
+				}
+
+				if ($answer['type'] == 'audio2') {
+					$urlVoice = GoogleVoice::getUrlAudio($answer['content']);
+					
+					$audio = new AudioMessage($urlVoice);
+					$objData->setAttachmentMessage('audio', $audio);
 				}
 
 				if ($answer['type'] == 'audio') {
