@@ -33,7 +33,7 @@ class NaHelper extends KnowledgeHelper
                     if (array_key_exists('avatar', $character)) {
                         $avatar = $character['avatar'];
 
-                        $smallImage = explode('?', $avatar)[0] . '/scale-to-width-down/300';
+                        $smallImage = explode('/revision', $avatar)[0];
                         $result[] = [
                             'id'	=>	null,
                             'type'	=>	'image',

@@ -12,12 +12,13 @@ class CurlHelper
 		$client = new Client([
 		    'headers' => [ 'Content-Type' => 'application/json' ]
 		]);
+        try {
+            $response = $client->post($url,
+                ['body' => $data]
+            );
 
-		$response = $client->post($url,
-		    ['body' => $data]
-		);
-
-		return $response;
+            return $response;
+        } catch (\Exception $e){}
 	}
 
 	public static function post($url, $data, $headers = null) {
@@ -76,7 +77,7 @@ class CurlHelper
 
 			$result = json_decode($decode_str, true);
 		}
-		
+
 		return $result;
 	}
 
