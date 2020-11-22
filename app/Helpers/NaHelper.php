@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 use App\Helpers\Entity\EntityDetection;
+use App\Models\NarutoCharacter;
 
 class NaHelper extends KnowledgeHelper
 {
@@ -40,16 +41,65 @@ class NaHelper extends KnowledgeHelper
                         ];
                     }
                     $moreInfo = "";
-                    $arrKeyInfo = ['summary'];
-                    foreach ($arrKeyInfo as $key) {
+                    $arrKeyInfo = [
+                        'affiliation'   => 'Village',
+                        'nickname'   => 'Nickname',
+                        'sex'   => 'Sex',
+                        'birthday'   => 'Birthday',
+                        'blood_type'   => 'Blood',
+                    ];
+                    foreach ($arrKeyInfo as $key => $value) {
                         if (array_key_exists($key, $character)) {
-                            $moreInfo .= $key . ': ' . $character[$key] . "\n";
+                            $moreInfo .= $value . ': ' . $character[$key] . "\n";
                         }
                     }
                     $result[] = [
                         'id'	=>	null,
                         'type'	=>	'text',
                         'message'	=>	$moreInfo
+                    ];
+
+                    $result[] = [
+                        'id'	=>	null,
+                        'type'	=>	'button',
+                        'message'	=>	'More information',
+                        'buttons' => json_encode([
+                            [
+                                "type"		=> "postback",
+                                "title"		=> "Summary",
+                                "payload"	=> "NA::summary|" . $character['id']
+                            ],
+                            [
+                                "type"		=> "postback",
+                                "title"		=> "Family",
+                                "payload"	=> "NA::family|" . $character['id']
+                            ],
+                            [
+                                "type"		=> "web_url",
+                                "title"		=> "View more",
+                                "url"	=> $character['link_origin']
+                            ]
+                        ])
+                    ];
+                }
+            }
+
+            if ($query['type'] == 'postback') {
+                $payload = $query['content'];
+                $id = explode("|", $payload)[1];
+                $character = NarutoCharacter::find($id);
+                if (strpos($payload, 'NA::summary') !== false) {
+                    $result[] = [
+                        'id'	=>	null,
+                        'type'	=>	'text',
+                        'message'	=>	$character['summary']
+                    ];
+                }
+                if (strpos($payload, 'NA::family') !== false) {
+                    $result[] = [
+                        'id'	=>	null,
+                        'type'	=>	'text',
+                        'message'	=>	$character['family']
                     ];
                 }
             }
