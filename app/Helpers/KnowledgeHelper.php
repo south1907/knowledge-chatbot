@@ -33,7 +33,7 @@ abstract class KnowledgeHelper
 			$id_page = $input['entry'][0]['id'];
 
 			$ACCESS_TOKEN = env("ACCESS_TOKEN_" . $id_page, "");
-		
+
 			$url = 'https://graph.facebook.com/v5.0/me/messages?access_token=' . $ACCESS_TOKEN;
 
 			$sender = $messaging['sender']['id']; //sender facebook id
@@ -86,9 +86,8 @@ abstract class KnowledgeHelper
 				$user->save();
 			}
 
-			$objData = new FbAnswer($sender);
-
 			foreach ($answers as $answer) {
+                $objData = new FbAnswer($sender);
 				$jsonData = "";
 
 				if ($answer['type'] == 'text') {
@@ -119,7 +118,6 @@ abstract class KnowledgeHelper
 						if (!empty($mes)) {
 							$objData->setTextMessage($mes);
 							$jsonData = json_encode($objData);
-
 							CurlHelper::send($url, $jsonData);
 						}
 					}
@@ -130,7 +128,6 @@ abstract class KnowledgeHelper
 					if (!empty($answer['url'])) {
 						$image = new ImageMessage($answer['url']);
 						$objData->setAttachmentMessage('image', $image);
-
 						$jsonData = json_encode($objData);
 						CurlHelper::send($url, $jsonData);
 					}
@@ -138,7 +135,7 @@ abstract class KnowledgeHelper
 
 				if ($answer['type'] == 'audio2') {
 					$urlVoice = GoogleVoice::getUrlAudio($answer['content']);
-					
+
 					$audio = new AudioMessage($urlVoice);
 					$objData->setAttachmentMessage('audio', $audio);
 

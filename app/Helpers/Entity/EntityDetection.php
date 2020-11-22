@@ -2,6 +2,7 @@
 namespace App\Helpers\Entity;
 
 use App\Models\Hero;
+use App\Models\NarutoCharacter;
 
 class EntityDetection
 {
@@ -44,7 +45,14 @@ class EntityDetection
 		return $result;
 	}
 
-	public static function checkContain($arr, $sentence) {
+    public static function findCharacterNaruto($sentence) {
+        $characters = NarutoCharacter::where('fullname_2', 'like', '%'. $sentence .'%')
+            ->orWhere('fullname', 'like', '%'. $sentence .'%')
+            ->get()->toArray();
+        return EntityDetection::findMainCharacter($characters);
+    }
+
+    public static function checkContain($arr, $sentence) {
 
 		$sentence = strtolower($sentence);
 		foreach ($arr as $heroName) {
@@ -56,4 +64,17 @@ class EntityDetection
 
 		return false;
 	}
+
+	private static function findMainCharacter($characters) {
+	    $maxCount = 0;
+	    $result = null;
+        foreach ($characters as $cha) {
+            $arrVal = array_values($cha);
+            if (count(array_filter($arrVal)) > $maxCount) {
+                $maxCount = count(array_filter($arrVal));
+                $result = $cha;
+            }
+        }
+        return $result;
+    }
 }

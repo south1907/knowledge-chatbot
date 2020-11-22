@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\NaHelper;
 use Illuminate\Http\Request;
 use App\Helpers\XSMBHelper;
 use App\Helpers\NyHelper;
@@ -51,14 +52,14 @@ class MainController extends Controller
     }
 
     public function verifyWebhook (Request $request) {
-    	/* validate verify token needed for setting up web hook */ 
-    	
+    	/* validate verify token needed for setting up web hook */
+
         $VERIFY_TOKEN = env("VERIFY_TOKEN", "");
-    	
+
     	$all = $request->all();
     	info(print_r($all, true));
 
-		if ($request->has('hub_verify_token')) { 
+		if ($request->has('hub_verify_token')) {
 		    if ($request->get('hub_verify_token') === $VERIFY_TOKEN) {
 		        echo $request->get('hub_challenge');
 		        return;
@@ -71,17 +72,18 @@ class MainController extends Controller
     }
 
     public function webhook(Request $request) {
-		
+
 		/* receive and send messages */
 		$input = $request->all();
 		info(print_r($input, true));
 
         if (isset($input['entry'][0]['id'])) {
             $id_page = $input['entry'][0]['id'];
-            
+
             $NY_PAGE_ID = env("NY_PAGE_ID", "");
             $XSMB_PAGE_ID = env("XSMB_PAGE_ID", "");
             $LQ_PAGE_ID = env("LQ_PAGE_ID", "");
+            $NA_PAGE_ID = env("NA_PAGE_ID", "");
 
             if ($id_page == $NY_PAGE_ID) {
                 NyHelper::sendAnswer($input);
@@ -94,7 +96,11 @@ class MainController extends Controller
             if ($id_page == $LQ_PAGE_ID) {
                 LQHelper::sendAnswer($input);
             }
-            
+
+            if ($id_page == $NA_PAGE_ID) {
+                NaHelper::sendAnswer($input);
+            }
+
         }
 
         return;
