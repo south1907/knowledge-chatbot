@@ -60,6 +60,7 @@ class EntityDetection
 
         $intent = null;
         $datetime = null;
+        $number = null;
         if (count($entities) > 0) {
             if (array_key_exists('intent_entity:intent_entity', $entities)) {
                 $intent = $entities['intent_entity:intent_entity'][0]['value'];
@@ -68,11 +69,16 @@ class EntityDetection
             if (array_key_exists('wit$datetime:datetime', $entities)) {
                 $datetime = $entities['wit$datetime:datetime'][0]['value'];
             }
+
+            if (array_key_exists('wit$number:number', $entities)) {
+                $number = $entities['wit$number:number'][0]['value'];
+            }
         }
 
         return [
             'intent'    =>  $intent,
             'datetime' =>  $datetime,
+            'number' =>  $number,
         ];
     }
 

@@ -18,6 +18,7 @@ class XSMBHelper extends KnowledgeHelper
 
         $intent = 'UNKNOWN';
         $datetime = 'UNKNOWN';
+        $number = 'UNKNOWN';
 
         if (!array_key_exists('content', $query)) {
             return $result;
@@ -34,6 +35,10 @@ class XSMBHelper extends KnowledgeHelper
             $datetime = $res['datetime'];
         }
 
+        if ($res['number']) {
+            $number = $res['number'];
+        }
+
         if ($datetime != 'UNKNOWN') {
             $string_datetime = date("d/m/Y", strtotime($datetime));
         } else {
@@ -44,9 +49,7 @@ class XSMBHelper extends KnowledgeHelper
         switch ($intent) {
             case 'check_xsmb':
 
-                if (array_key_exists('number', $entities)) {
-                    $number = $entities['number'][0]['value'];
-
+                if ($number) {
                     $special = XSMBHelper::queryNumberSpecial($query_time);
                     $xsmb = substr($special, 3);
 
@@ -59,8 +62,6 @@ class XSMBHelper extends KnowledgeHelper
                     } else {
                         $result = 'xin lỗi, tôi chưa có thông tin kết quả bạn nhé!';
                     }
-
-
                 } else {
                     $result = 'bạn phải hỏi đánh con bao nhiêu chứ';
                 }
@@ -132,11 +133,11 @@ class XSMBHelper extends KnowledgeHelper
 		$response = $client->request('GET', 'https://xoso.com.vn/xsmb-'. $query_time .'.html');
 		$body = $response->getBody();
 
-		$postion = strpos($body, 'colorred xshover');
+		$postion = strpos($body, 'special-prize');
 		if ($postion != null) {
-			$start = $postion + 18;
+			$start = $postion + 14;
 			$result = substr($body, $start, 5);
-
+            print($result);
 			if (is_numeric($result)) {
 				return $result;
 			} else {
