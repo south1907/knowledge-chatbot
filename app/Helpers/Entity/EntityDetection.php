@@ -1,8 +1,10 @@
 <?php
 namespace App\Helpers\Entity;
 
+use App\Helpers\CurlHelper;
 use App\Models\Hero;
 use App\Models\NarutoCharacter;
+use GuzzleHttp\Client;
 
 class EntityDetection
 {
@@ -52,7 +54,29 @@ class EntityDetection
         return EntityDetection::findMainCharacter($characters);
     }
 
-    public static function checkContain($arr, $sentence) {
+    public static function queryWit($message) {
+
+        $entities = CurlHelper::requestWit($message);
+
+        $intent = null;
+        $datetime = null;
+        if (count($entities) > 0) {
+            if (array_key_exists('intent_entity:intent_entity', $entities)) {
+                $intent = $entities['intent_entity:intent_entity'][0]['value'];
+            }
+
+            if (array_key_exists('wit$datetime:datetime', $entities)) {
+                $datetime = $entities['wit$datetime:datetime'][0]['value'];
+            }
+        }
+
+        return [
+            'intent'    =>  $intent,
+            'datetime' =>  $datetime,
+        ];
+    }
+
+    private static function checkContain($arr, $sentence) {
 
 		$sentence = strtolower($sentence);
 		foreach ($arr as $heroName) {

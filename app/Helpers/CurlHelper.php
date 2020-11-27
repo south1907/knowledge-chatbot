@@ -81,5 +81,16 @@ class CurlHelper
 		return $result;
 	}
 
+	public static function requestWit($message) {
+
+        $CLIENT_WIT = env("CLIENT_WIT", "");
+        $client = new Client(['headers' => ['Authorization' => 'Bearer ' . $CLIENT_WIT]]);
+        $response = $client->request('GET', 'https://api.wit.ai/message', ['query' => ['q' => $message]]);
+
+        $body = $response->getBody();
+        $obj = json_decode($body, true);
+        return $obj['entities'];
+    }
+
 }
 ?>

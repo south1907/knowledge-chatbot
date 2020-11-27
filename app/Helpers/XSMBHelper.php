@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Helpers;
+use App\Helpers\Entity\EntityDetection;
 use GuzzleHttp\Client;
 
 class XSMBHelper extends KnowledgeHelper
@@ -14,127 +15,110 @@ class XSMBHelper extends KnowledgeHelper
 					'message'	=>	'Xin lỗi, tôi còn trẻ, tôi chưa thể trả lời những câu hỏi đó được...'
 				]
 			];
-		
-		$CLIENT_WIT = env("CLIENT_WIT", "");
-		
-		if (!array_key_exists('content', $query)) {
-			return $result;
-		}
 
-		$message = $query['content'];
+        $intent = 'UNKNOWN';
+        $datetime = 'UNKNOWN';
 
-		$client = new Client(['headers' => ['Authorization' => 'Bearer ' . $CLIENT_WIT]]);
-		$response = $client->request('GET', 'https://api.wit.ai/message', ['query' => ['q' => $message]]);
-		
-		$body = $response->getBody();
-		$obj = json_decode($body, true);
+        if (!array_key_exists('content', $query)) {
+            return $result;
+        }
 
-		$entities = $obj['entities'];
+        $message = $query['content'];
 
-		if (count($entities) > 0) {
+        $res = EntityDetection::queryWit($message);
+        if ($res['intent']) {
+            $intent = $res['intent'];
+        }
 
-			$intent = 'UNKNOWN';
+        if ($res['datetime']) {
+            $datetime = $res['datetime'];
+        }
 
-			if (array_key_exists('intent', $entities)) {
-				$intent = $entities['intent'][0]['value'];
-			}
+        if ($datetime != 'UNKNOWN') {
+            $string_datetime = date("d/m/Y", strtotime($datetime));
+        } else {
+            $string_datetime = date("d/m/Y");
+        }
+        $query_time = str_replace('/', '-', $string_datetime);
 
-			$datetime = 'UNKNOWN';
+        switch ($intent) {
+            case 'check_xsmb':
 
-			if (array_key_exists('datetime', $entities)) {
-				$datetime = $entities['datetime'][0]['value'];
-			}
+                if (array_key_exists('number', $entities)) {
+                    $number = $entities['number'][0]['value'];
 
-			if ($datetime != 'UNKNOWN') {
-				$string_datetime = date("d/m/Y", strtotime($datetime));
-			} else {
-				$string_datetime = date("d/m/Y");
-			}
-			$query_time = str_replace('/', '-', $string_datetime);
+                    $special = XSMBHelper::queryNumberSpecial($query_time);
+                    $xsmb = substr($special, 3);
 
-			switch ($intent) {
-				case 'UNKNOWN':
-					$result = 'bạn hỏi khó quá';
-					break;
+                    if ($xsmb != null) {
+                        if ($xsmb == $number) {
+                            $result = 'bạn đánh con ' . $number . ' thì chúc mừng bạn, bạn trúng cmnr';
+                        } else {
+                            $result = 'bạn đánh con ' . $number . ', tạch cmn rồi, đề về ' . $xsmb . ' cơ. Dù sao vẫn chúc mừng bạn, bạn nên bỏ sự nghiệp lô đề đi';
+                        }
+                    } else {
+                        $result = 'xin lỗi, tôi chưa có thông tin kết quả bạn nhé!';
+                    }
 
-				case 'check_xsmb':
 
-					if (array_key_exists('number', $entities)) {
-						$number = $entities['number'][0]['value'];
+                } else {
+                    $result = 'bạn phải hỏi đánh con bao nhiêu chứ';
+                }
 
-						$special = XSMBHelper::queryNumberSpecial($query_time);
-						$xsmb = substr($special, 3);
+                break;
+            case 'query_xsmb':
 
-						if ($xsmb != null) {
-							if ($xsmb == $number) {
-								$result = 'bạn đánh con ' . $number . ' thì chúc mừng bạn, bạn trúng cmnr';
-							} else {
-								$result = 'bạn đánh con ' . $number . ', tạch cmn rồi, đề về ' . $xsmb . ' cơ. Dù sao vẫn chúc mừng bạn, bạn nên bỏ sự nghiệp lô đề đi';
-							}
-						} else {
-							$result = 'xin lỗi, tôi chưa có thông tin kết quả bạn nhé!';
-						}
-						
+            case 'query_xsmb_special':
+                // TODO: request knowledge really. If time < 6h30 and query_time= = today --> no results --> DONE
 
-					} else {
-						$result = 'bạn phải hỏi đánh con bao nhiêu chứ';
-					}
-					
-					break;
-				case 'query_xsmb':
+                $homnay = date("d/m/Y", time());
+                $homqua = date("d/m/Y", time() - 86400 * 1);
+                $homkia = date("d/m/Y", time() - 86400 * 2);
 
-				case 'query_xsmb_special':
-					// TODO: request knowledge really. If time < 6h30 and query_time= = today --> no results --> DONE
+                switch ($string_datetime) {
+                    case $homnay:
+                        $string_datetime = 'hôm nay ('. $string_datetime .')';
+                        break;
+                    case $homqua:
+                        $string_datetime = 'hôm qua ('. $string_datetime .')';
+                        break;
+                    case $homkia:
+                        $string_datetime = 'hôm kia ('. $string_datetime .')';
+                        break;
+                }
 
-					$homnay = date("d/m/Y", time());
-					$homqua = date("d/m/Y", time() - 86400 * 1);
-					$homkia = date("d/m/Y", time() - 86400 * 2);
+                $current_hour = date('H:i');
 
-					switch ($string_datetime) {
-						case $homnay:
-							$string_datetime = 'hôm nay ('. $string_datetime .')';
-							break;
-						case $homqua:
-							$string_datetime = 'hôm qua ('. $string_datetime .')';
-							break;
-						case $homkia:
-							$string_datetime = 'hôm kia ('. $string_datetime .')';
-							break;
-					}
+                if (strpos($string_datetime, 'hôm nay') !== false && $current_hour < '18:35') {
+                    $result = 'giờ là ' . $current_hour . ' đề chưa quay, phải sau 6 rưỡi tối bạn ạ!';
+                } else {
+                    $special = XSMBHelper::queryNumberSpecial($query_time);
+                    if ($special == null) {
+                        $result = 'Thời gian bạn hỏi không khả dụng';
+                    } else {
+                        $xsmb = substr($special, 3);
+                        $result = 'Giải đặc biệt là: ' . $special . '. Còn đề thì là ' . $xsmb . ' nhé';
+                    }
+                }
 
-					$current_hour = date('H:i');
+                break;
 
-					if (strpos($string_datetime, 'hôm nay') !== false && $current_hour < '18:35') {
-						$result = 'giờ là ' . $current_hour . ' đề chưa quay, phải sau 6 rưỡi tối bạn ạ!';
-					} else {
-						$special = XSMBHelper::queryNumberSpecial($query_time);
-						if ($special == null) {
-							$result = 'Thời gian bạn hỏi không khả dụng';
-						} else {
-							$xsmb = substr($special, 3);
-							$result = 'Giải đặc biệt là: ' . $special . '. Còn đề thì là ' . $xsmb . ' nhé';	
-						}
-					}
-					
-					break;
-				
-				case 'recommend': 
-					$xsmb = rand (10, 99);
-					// TODO: recommend use frequently
-					$result = 'Tôi đoán đề hôm nay sẽ không phải là ' . $xsmb . '. Hehe';
-					break;
+            case 'recommend':
+                $xsmb = rand (10, 99);
+                // TODO: recommend use frequently
+                $result = 'Tôi đoán đề hôm nay sẽ không phải là ' . $xsmb . '. Hehe';
+                break;
 
-				case 'help': 
-					$result = "Tôi có thể đáp ứng các chức năng\n";
-					$result .= "+ Tra cứu xsmb: hôm nay đề về bao nhiêu\n";
-					$result .= "+ Kiểm tra xsmb: tôi đánh con 39 có trúng không\n";
-					$result .= "+ Dự đoán xsmb: dự đoán kết quả xsmb hôm nay\n";
-					break;
-				default:
-					$result = 'bạn hỏi khó quá';
-					break;
-			}
-		}
+            case 'help':
+                $result = "Tôi có thể đáp ứng các chức năng\n";
+                $result .= "+ Tra cứu xsmb: hôm nay đề về bao nhiêu\n";
+                $result .= "+ Kiểm tra xsmb: tôi đánh con 39 có trúng không\n";
+                $result .= "+ Dự đoán xsmb: dự đoán kết quả xsmb hôm nay\n";
+                break;
+            default:
+                $result = 'bạn hỏi khó quá';
+                break;
+        }
 		return [
 			[
 				'type' => 'text',
@@ -154,14 +138,14 @@ class XSMBHelper extends KnowledgeHelper
 			$result = substr($body, $start, 5);
 
 			if (is_numeric($result)) {
-				return $result;	
+				return $result;
 			} else {
 				return null;
 			}
 
 		} else {
 			return null;
-		}		
+		}
 	}
 }
 ?>

@@ -19,67 +19,88 @@ class NaHelper extends KnowledgeHelper
             // xu ly text
             if ($query['type'] == 'text') {
                 $message = mb_strtolower($query['content']);
-                $character = EntityDetection::findCharacterNaruto($message);
 
-                if ($character) {
-                    $text = "Character: " . $character['fullname_2'];
+                $intent = null;
+                $datetime = null;
+                $res = EntityDetection::queryWit($message);
+                if ($res['intent']) {
+                    $intent = $res['intent'];
+                }
 
-                    $result[] = [
-                        'id'	=>	null,
-                        'type'	=>	'text',
-                        'message'	=>	$text
-                    ];
+                if ($res['datetime']) {
+                    $datetime = $res['datetime'];
+                }
 
-                    if (array_key_exists('avatar', $character)) {
-                        $avatar = $character['avatar'];
+                // khong co intent
+                if ($intent == null) {
+                    $character = EntityDetection::findCharacterNaruto($message);
 
-                        $smallImage = explode('/revision', $avatar)[0];
+                    if ($character) {
+                        $text = "Character: " . $character['fullname_2'];
+
                         $result[] = [
                             'id'	=>	null,
-                            'type'	=>	'image',
-                            'url'	=>	$smallImage
+                            'type'	=>	'text',
+                            'message'	=>	$text
+                        ];
+
+                        if (array_key_exists('avatar', $character)) {
+                            $avatar = $character['avatar'];
+
+                            $smallImage = explode('/revision', $avatar)[0];
+                            $result[] = [
+                                'id'	=>	null,
+                                'type'	=>	'image',
+                                'url'	=>	$smallImage
+                            ];
+                        }
+                        $moreInfo = "";
+                        $arrKeyInfo = [
+                            'affiliation'   => 'Village',
+                            'nickname'   => 'Nickname',
+                            'sex'   => 'Sex',
+                            'birthday'   => 'Birthday',
+                            'blood_type'   => 'Blood',
+                        ];
+                        foreach ($arrKeyInfo as $key => $value) {
+                            if (array_key_exists($key, $character)) {
+                                $moreInfo .= $value . ': ' . $character[$key] . "\n";
+                            }
+                        }
+                        $result[] = [
+                            'id'	=>	null,
+                            'type'	=>	'text',
+                            'message'	=>	$moreInfo
+                        ];
+
+                        $result[] = [
+                            'id'	=>	null,
+                            'type'	=>	'button',
+                            'message'	=>	'More information',
+                            'buttons' => json_encode([
+                                [
+                                    "type"		=> "postback",
+                                    "title"		=> "Summary",
+                                    "payload"	=> "NA::summary|" . $character['id']
+                                ],
+                                [
+                                    "type"		=> "postback",
+                                    "title"		=> "Family",
+                                    "payload"	=> "NA::family|" . $character['id']
+                                ],
+                                [
+                                    "type"		=> "web_url",
+                                    "title"		=> "View more",
+                                    "url"	=> $character['link_origin']
+                                ]
+                            ])
                         ];
                     }
-                    $moreInfo = "";
-                    $arrKeyInfo = [
-                        'affiliation'   => 'Village',
-                        'nickname'   => 'Nickname',
-                        'sex'   => 'Sex',
-                        'birthday'   => 'Birthday',
-                        'blood_type'   => 'Blood',
-                    ];
-                    foreach ($arrKeyInfo as $key => $value) {
-                        if (array_key_exists($key, $character)) {
-                            $moreInfo .= $value . ': ' . $character[$key] . "\n";
-                        }
-                    }
+                } else if ($intent == 'birthday') {
                     $result[] = [
                         'id'	=>	null,
                         'type'	=>	'text',
-                        'message'	=>	$moreInfo
-                    ];
-
-                    $result[] = [
-                        'id'	=>	null,
-                        'type'	=>	'button',
-                        'message'	=>	'More information',
-                        'buttons' => json_encode([
-                            [
-                                "type"		=> "postback",
-                                "title"		=> "Summary",
-                                "payload"	=> "NA::summary|" . $character['id']
-                            ],
-                            [
-                                "type"		=> "postback",
-                                "title"		=> "Family",
-                                "payload"	=> "NA::family|" . $character['id']
-                            ],
-                            [
-                                "type"		=> "web_url",
-                                "title"		=> "View more",
-                                "url"	=> $character['link_origin']
-                            ]
-                        ])
+                        'message'	=>	$datetime
                     ];
                 }
             }
