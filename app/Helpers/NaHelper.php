@@ -44,7 +44,7 @@ class NaHelper extends KnowledgeHelper
                     if ($datetime) {
                         $string_datetime = date("F j", strtotime($datetime));
 
-                        $characters = NarutoCharacter::where('birthday', $string_datetime)->get();
+                        $characters = NarutoCharacter::where('birthday', $string_datetime)->get()->toArray();;
 
                         $elements = [];
                         $count = 1;
@@ -88,7 +88,7 @@ class NaHelper extends KnowledgeHelper
             if ($query['type'] == 'postback') {
                 $payload = $query['content'];
                 $id = explode("|", $payload)[1];
-                $character = NarutoCharacter::find($id);
+                $character = NarutoCharacter::find($id)->toArray();
                 if (strpos($payload, 'NA::summary') !== false) {
                     $result[] = [
                         'id'	=>	null,
@@ -109,11 +109,8 @@ class NaHelper extends KnowledgeHelper
             }
         }
 		if (count($result) == 0) {
-
 			$rand = array_rand($random_string);
-
 			$mes = $random_string[$rand];
-
 			$result = [
 				[
 					'id'	=>	null,
@@ -138,7 +135,6 @@ class NaHelper extends KnowledgeHelper
 
         if (array_key_exists('avatar', $character)) {
             $avatar = $character['avatar'];
-
             $smallImage = explode('/revision', $avatar)[0];
             $result[] = [
                 'id'	=>	null,
