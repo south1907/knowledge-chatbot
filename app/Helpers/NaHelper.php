@@ -43,6 +43,7 @@ class NaHelper extends KnowledgeHelper
                     // intent ngay nay la sinh nhat cua ai
                     if ($datetime) {
                         $string_datetime = date("F j", strtotime($datetime));
+                        $string_datetime_2 = date("d/m", strtotime($datetime));
 
                         $characters = NarutoCharacter::where('birthday', $string_datetime)->get()->toArray();;
 
@@ -77,8 +78,20 @@ class NaHelper extends KnowledgeHelper
                         if (!empty($elements)) {
                             $result[] = [
                                 'id'	=>	null,
+                                'type'	=>	'text',
+                                'message'	=>	'Những người có ngày sinh ' . $string_datetime_2
+                            ];
+
+                            $result[] = [
+                                'id'	=>	null,
                                 'type'	=>	'generic',
                                 'elements'	=>	$elements
+                            ];
+                        } else {
+                            $result[] = [
+                                'id'	=>	null,
+                                'type'	=>	'text',
+                                'message'	=>	'Không tìm thấy ai có ngày sinh là ' . $string_datetime_2
                             ];
                         }
                     }

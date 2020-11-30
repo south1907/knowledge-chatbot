@@ -9,7 +9,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <input class="datepicker" data-date-format="mm/dd/yyyy">
+    <div class="container">
+        <h3>Chose date</h3>
+        <input class="datepicker" data-date-format="mm/dd/yyyy">
+    </div>
 
     <script>
         var isSupported = false;
