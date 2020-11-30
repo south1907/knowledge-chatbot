@@ -15,7 +15,6 @@ class WebviewController extends Controller
         $psid = $input['psid'];
         $date = $input['date'];
         $pageId = '101255648493211';
-        print($psid);
-//        return CurlHelper::sendWebFacebook($pageId, $psid, $date);
+        return CurlHelper::sendWebFacebook($pageId, $psid, $date);
     }
 }
