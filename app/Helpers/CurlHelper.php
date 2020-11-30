@@ -92,5 +92,41 @@ class CurlHelper
         return $obj['entities'];
     }
 
+    public static function sendWebFacebook($pageId, $PSID, $text) {
+
+        $data = [
+            'entry' => [
+                [
+                    'id' => $pageId,
+                    'time' => 1582570011269,
+                    'messaging' => [
+                        [
+                            'sender' => [
+                                'id' => $PSID,
+                            ],
+                            'recipient' => [
+                                'id' => $pageId,
+                            ],
+                            'message' => [
+                                'mid' => 'mid.' . time(),
+                                'text' => $text,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $dataJson = json_encode($data);
+
+        $url = env('APP_URL') . '/api/v1/webhook';
+        $headers = [
+            'content-type'	=>	'application/json'
+        ];
+
+        $response = CurlHelper::post($url, $dataJson, $headers);
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
 }
 ?>

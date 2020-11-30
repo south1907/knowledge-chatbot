@@ -15,25 +15,32 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/webview/date', function () {
+    return view('webview.date');
+});
+
 
 Route::prefix('api')->group(function () {
     Route::prefix('v1')->group(function () {
 	    Route::get('', 'MainController@index')->name('index');
 	    Route::get('answer/xsmb', 'MainController@answerXSMB')->name('answerXSMB');
 	    Route::get('answer/ny', 'MainController@answerNy')->name('answerNy');
-	    
+
 	    // webhook facebook
 	    Route::get('webhook', 'MainController@verifyWebhook')->name('verifyWebhook');
 	    Route::post('webhook', 'MainController@webhook')->name('webhook');
 
 	    //voice
 	    Route::get('voice', 'VoiceController@index')->name('voice');
+
+	    //webview
+        Route::post('webview/date', 'WebviewController@date')->name('webview.date');
 	});
 
 });
 
 Route::prefix('test')->group(function () {
-    
+
     Route::get('', 'TestController@index')->name('test');
     Route::get('zalo', 'TestController@zalo')->name('test.zalo');
 
