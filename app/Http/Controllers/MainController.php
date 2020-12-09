@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Helpers\XSMBHelper;
 use App\Helpers\NyHelper;
 use App\Helpers\LQHelper;
+use App\Helpers\PaHelper;
 
 class MainController extends Controller
 {
@@ -84,6 +85,7 @@ class MainController extends Controller
             $XSMB_PAGE_ID = env("XSMB_PAGE_ID", "");
             $LQ_PAGE_ID = env("LQ_PAGE_ID", "");
             $NA_PAGE_ID = env("NA_PAGE_ID", "");
+            $PA_PAGE_ID = env("PA_PAGE_ID", "");
 
             if ($id_page == $NY_PAGE_ID) {
                 NyHelper::sendAnswer($input);
@@ -99,6 +101,10 @@ class MainController extends Controller
 
             if ($id_page == $NA_PAGE_ID) {
                 NaHelper::sendAnswer($input);
+            }
+
+            if ($id_page == $PA_PAGE_ID) {
+                PaHelper::sendAnswer($input);
             }
 
         }
