@@ -24,12 +24,12 @@ class PaHelper extends KnowledgeHelper
                 $image = '';
                 $location = '';
                 $link = '';
-                if (contains($message, "facebook")) {
+                if (strpos($message, "facebook") != false) {
                     $image = 'https://www.facebook.com/images/fb_icon_325x325.png';
                     $location = 'Menlo Park, CA';
                     $link = 'https://www.facebook.com/facebook/';
                 }
-                if (contains($message, "youtube")) {
+                if (strpos($message, "youtube") != false) {
                     $image = 'https://www.youtube.com/img/desktop/yt_1200.png';
                     $location = '901 Cherry Avenue in San Bruno';
                     $link = 'https://www.facebook.com/youtube/';
