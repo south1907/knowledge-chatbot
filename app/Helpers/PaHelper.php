@@ -24,23 +24,26 @@ class PaHelper extends KnowledgeHelper
                 $image = '';
                 $location = '';
                 $link = '';
+                $org = '';
                 print_r($message);
                 if (strpos($message, "facebook") !== false) {
                     $image = 'https://www.facebook.com/images/fb_icon_325x325.png';
                     $location = 'Menlo Park, CA';
                     $link = 'https://www.facebook.com/facebook/';
+                    $org = 'Facebook';
                 }
                 if (strpos($message, "youtube") !== false) {
                     $image = 'https://www.youtube.com/img/desktop/yt_1200.png';
                     $location = '901 Cherry Avenue in San Bruno';
                     $link = 'https://www.facebook.com/youtube/';
+                    $org = 'Youtube';
                 }
 
                 if ($location) {
                     $result[] = [
                         'id'	=>	null,
                         'type'	=>	'text',
-                        'message'	=>	'Information of ' . $query['content']
+                        'message'	=>	'Information of ' . $org
                     ];
 
                     $result[] = [
