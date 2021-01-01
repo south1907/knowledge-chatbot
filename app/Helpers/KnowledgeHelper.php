@@ -42,7 +42,13 @@ abstract class KnowledgeHelper
 			// normal message
 			if (array_key_exists('message', $messaging)) {
 
-				if (array_key_exists('text', $messaging['message'])) {
+                if (array_key_exists('quick_reply', $messaging['message'])) {
+                    // postback quick_reply
+                    $message = [
+                        'type'	=>	'postback',
+                        'content'	=>	$messaging['message']['quick_reply']['payload'] //text that user sent
+                    ];
+                } else if (array_key_exists('text', $messaging['message'])) {
 					$message = [
 						'type'	=>	'text',
 						'content'	=>	$messaging['message']['text'] //text that user sent
@@ -53,13 +59,7 @@ abstract class KnowledgeHelper
 						'type'	=>	'icon',
 						'content'	=>	$messaging['message']['attachments']['payload']['url'] //text that user sent
 					];
-				} else if (array_key_exists('quick_reply', $messaging['message'])) {
-                    // postback quick_reply
-                    $message = [
-                        'type'	=>	'postback',
-                        'content'	=>	$messaging['message']['quick_reply']['payload'] //text that user sent
-                    ];
-                }
+				}
 			} else if (array_key_exists('postback', $messaging)) {
 				// postback message
 				$message = [
