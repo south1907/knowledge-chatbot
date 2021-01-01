@@ -15,6 +15,10 @@ class FbAnswer
 		$this->message['text'] = $text;
 	}
 
+    public function setquickReplies($quickReplies) {
+        $this->message['quick_replies'] = $quickReplies;
+    }
+
 	public function setAttachmentMessage($type, $attachment) {
 		$this->message = [
 			'attachment'	=>	[

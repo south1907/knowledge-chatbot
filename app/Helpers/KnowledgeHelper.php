@@ -196,6 +196,15 @@ abstract class KnowledgeHelper
 					CurlHelper::send($url, $jsonData);
 				}
 
+                if ($answer['type'] == 'quick_reply') {
+                    $message = $answer['message'];
+                    $quickReplies = json_decode($answer['quick_replies']);
+                    $objData->setTextMessage($message);
+                    $objData->setquickReplies($quickReplies);
+                    $jsonData = json_encode($objData);
+                    CurlHelper::send($url, $jsonData);
+                }
+
 				if ($answer['type'] == 'generic') {
 					$gen = new GenericMessage('generic', $answer['elements']);
 					$objData->setAttachmentMessage('template', $gen);

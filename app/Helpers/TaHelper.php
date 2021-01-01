@@ -28,7 +28,50 @@ class TaHelper extends KnowledgeHelper
             if ($query['type'] == 'postback') {
                 $payload = $query['content'];
                 $id = explode("|", $payload)[1];
+                $contentPayload = explode("|", $payload)[0];
+                $card = TarotCard::find($id)->toArray();
 
+                if (strpos($payload, 'TA::meaning_reverse') !== false) {
+                    $result[] = [
+                        'id'	=>	null,
+                        'type'	=>	'text',
+                        'message'	=>	$card['meaning_reverse']
+                    ];
+                }
+                if (strpos($payload, 'TA::meaning') !== false) {
+                    $typePayload = explode("::", $contentPayload)[1];
+
+                    if (array_key_exists($typePayload, $card)) {
+                        $summary = $card[$typePayload];
+                        $result[] = [
+                            'id'	=>	null,
+                            'type'	=>	'text',
+                            'message'	=>	$summary
+                        ];
+                    }
+                    if ($typePayload == 'meaning_summary') {
+                        $listMeaning = ['meaning_job', 'meaning_love', 'meaning_money', 'meaning_heath'];
+                        $listMeaningTitle = ['Công việc', 'Tình yêu', 'Tài chính', 'Sức khỏe'];
+                        $listReply = [];
+                        $count = 0;
+                        foreach ($listMeaning as $m) {
+                            if (array_key_exists($m, $card)) {
+                                $listReply[] = [
+                                    "content_type"		=> "text",
+                                    "title"		=> $listMeaningTitle[$count],
+                                    "payload"	=> "TA::". $m ."|" . $card['id']
+                                ];
+                            }
+                            $count += 1;
+                        }
+                        $result[] = [
+                            'id'	=>	null,
+                            'type'	=>	'quick_reply',
+                            'message'	=>	'Chi tiết theo lĩnh vực',
+                            'quick_replies' => json_encode($listReply)
+                        ];
+                    }
+                }
             }
         }
 		if (count($result) == 0) {
@@ -66,7 +109,7 @@ class TaHelper extends KnowledgeHelper
         }
 
         if (array_key_exists('summary', $card)) {
-            $summary = $card['image'];
+            $summary = $card['summary'];
             $result[] = [
                 'id'	=>	null,
                 'type'	=>	'text',
@@ -81,12 +124,12 @@ class TaHelper extends KnowledgeHelper
             'buttons' => json_encode([
                 [
                     "type"		=> "postback",
-                    "title"		=> "Lá Bài Xuôi",
+                    "title"		=> "Lá bài xuôi",
                     "payload"	=> "TA::meaning|" . $card['id']
                 ],
                 [
                     "type"		=> "postback",
-                    "title"		=> "Lá Bài Ngược",
+                    "title"		=> "Lá bài ngược",
                     "payload"	=> "TA::meaning_reverse|" . $card['id']
                 ],
                 [
