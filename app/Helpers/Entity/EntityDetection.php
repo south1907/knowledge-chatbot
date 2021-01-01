@@ -4,6 +4,7 @@ namespace App\Helpers\Entity;
 use App\Helpers\CurlHelper;
 use App\Models\Hero;
 use App\Models\NarutoCharacter;
+use App\Models\TarotCard;
 use GuzzleHttp\Client;
 
 class EntityDetection
@@ -48,10 +49,17 @@ class EntityDetection
 	}
 
     public static function findCharacterNaruto($sentence) {
-        $characters = NarutoCharacter::where('fullname_2', 'like', '%'. $sentence .'%')
+        $characters = NarutoCharacter::where('name', 'like', '%'. $sentence .'%')
             ->orWhere('fullname', 'like', '%'. $sentence .'%')
             ->get()->toArray();
         return EntityDetection::findMainCharacter($characters);
+    }
+
+    public static function findTarotCard($sentence) {
+        $card = TarotCard::where('name', '%'. $sentence .'%')
+            ->orWhere('name_translate', $sentence)
+            ->first()->toArray();
+        return $card;
     }
 
     public static function queryWit($message) {

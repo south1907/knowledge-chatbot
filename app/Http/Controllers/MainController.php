@@ -8,6 +8,7 @@ use App\Helpers\XSMBHelper;
 use App\Helpers\NyHelper;
 use App\Helpers\LQHelper;
 use App\Helpers\PaHelper;
+use App\Helpers\TaHelper;
 
 class MainController extends Controller
 {
@@ -86,6 +87,7 @@ class MainController extends Controller
             $LQ_PAGE_ID = env("LQ_PAGE_ID", "");
             $NA_PAGE_ID = env("NA_PAGE_ID", "");
             $PA_PAGE_ID = env("PA_PAGE_ID", "");
+            $TA_PAGE_ID = env("TA_PAGE_ID", "");
 
             if ($id_page == $NY_PAGE_ID) {
                 NyHelper::sendAnswer($input);
@@ -107,6 +109,9 @@ class MainController extends Controller
                 PaHelper::sendAnswer($input);
             }
 
+            if ($id_page == $TA_PAGE_ID) {
+                TaHelper::sendAnswer($input);
+            }
         }
 
         return;
