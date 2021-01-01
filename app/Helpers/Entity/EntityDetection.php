@@ -58,8 +58,11 @@ class EntityDetection
     public static function findTarotCard($sentence) {
         $card = TarotCard::where('name', '%'. $sentence .'%')
             ->orWhere('name_translate', $sentence)
-            ->first()->toArray();
-        return $card;
+            ->first();
+        if ($card) {
+            return $card->toArray();
+        }
+        return null;
     }
 
     public static function queryWit($message) {
