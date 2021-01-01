@@ -56,13 +56,40 @@ class EntityDetection
     }
 
     public static function findTarotCard($sentence) {
-        $card = TarotCard::where('name', '%'. $sentence .'%')
+        $card = TarotCard::where('name', 'like', $sentence .'%')
             ->orWhere('name_translate', $sentence)
             ->first();
         if ($card) {
             return $card->toArray();
         }
         return null;
+    }
+
+    public static function findTarotCardByLevel($level) {
+	    $mapLevel = [
+	        '1, một' =>  'ace',
+	        '2, hai' =>  'two',
+	        '3, ba' =>  'three',
+	        '4, bốn' =>  'four',
+	        '5, năm' =>  'five',
+	        '6, sáu' =>  'six',
+	        '7, bảy, bẩy' =>  'seven',
+	        '8, tám' =>  'eight',
+	        '9, chín' =>  'nine',
+	        '10, mười' =>  'ten',
+	        'kị sĩ, kỵ sỹ, kị kỹ, kỵ sĩ' =>  'knight',
+	        'vua' =>  'king',
+	        'hoàng hậu, nữ hoàng' =>  'queen',
+        ];
+	    foreach ($mapLevel as $key => $value) {
+            if (strpos($key, $level) !== false) {
+                $level = $value;
+                break;
+            }
+        }
+        $cards = TarotCard::where('level', $level)
+            ->get()->toArray();
+        return $cards;
     }
 
     public static function queryWit($message) {

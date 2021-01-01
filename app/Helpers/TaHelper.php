@@ -22,6 +22,25 @@ class TaHelper extends KnowledgeHelper
 				$card = EntityDetection::findTarotCard($message);
                 if ($card) {
                     $result = self::getAnswerCard($card);
+                } else {
+                    $cards = EntityDetection::findTarotCardByLevel($message);
+
+                    if (count($cards) > 0) {
+                        foreach ($cards as $card) {
+                            $listReply[] = [
+                                "content_type"		=> "text",
+                                "title"		=> $card['name'],
+                                "payload"	=> "TA::card|" . $card['id']
+                            ];
+                        }
+
+                        $result[] = [
+                            'id'	=>	null,
+                            'type'	=>	'quick_reply',
+                            'message'	=>	'Các là bài',
+                            'quick_replies' => json_encode($listReply)
+                        ];
+                    }
                 }
             }
 
@@ -30,6 +49,10 @@ class TaHelper extends KnowledgeHelper
                 $id = explode("|", $payload)[1];
                 $contentPayload = explode("|", $payload)[0];
                 $card = TarotCard::find($id)->toArray();
+
+                if (strpos($payload, 'TA::card') !== false) {
+                    $result = self::getAnswerCard($card);
+                }
 
                 if (strpos($payload, 'TA::meaning_reverse') !== false) {
                     $result[] = [
