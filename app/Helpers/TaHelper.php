@@ -125,7 +125,7 @@ class TaHelper extends KnowledgeHelper
                 [
                     "type"		=> "postback",
                     "title"		=> "Lá bài xuôi",
-                    "payload"	=> "TA::meaning|" . $card['id']
+                    "payload"	=> "TA::meaning_summary|" . $card['id']
                 ],
                 [
                     "type"		=> "postback",
