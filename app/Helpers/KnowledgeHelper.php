@@ -53,13 +53,13 @@ abstract class KnowledgeHelper
 						'type'	=>	'icon',
 						'content'	=>	$messaging['message']['attachments']['payload']['url'] //text that user sent
 					];
-				}
-			} else if (array_key_exists('quick_reply', $messaging)) {
-				// postback message
-				$message = [
-					'type'	=>	'postback',
-					'content'	=>	$messaging['quick_reply']['payload'] //text that user sent
-				];
+				} else if (array_key_exists('quick_reply', $messaging['message'])) {
+                    // postback quick_reply
+                    $message = [
+                        'type'	=>	'postback',
+                        'content'	=>	$messaging['message']['quick_reply']['payload'] //text that user sent
+                    ];
+                }
 			} else if (array_key_exists('postback', $messaging)) {
 				// postback message
 				$message = [
