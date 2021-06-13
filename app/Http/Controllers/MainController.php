@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\GameHelper;
 use App\Helpers\NaHelper;
 use Illuminate\Http\Request;
 use App\Helpers\XSMBHelper;
@@ -50,6 +51,7 @@ class MainController extends Controller
             $LQ_PAGE_ID = env("LQ_PAGE_ID", "");
             $NA_PAGE_ID = env("NA_PAGE_ID", "");
             $TA_PAGE_ID = env("TA_PAGE_ID", "");
+            $GAME_PAGE_ID = env("GAME_PAGE_ID", "");
 
             switch ($id_page) {
                 case $LQ_PAGE_ID:
@@ -60,6 +62,9 @@ class MainController extends Controller
                     break;
                 case $TA_PAGE_ID:
                     TaHelper::sendAnswer($input);
+                    break;
+                case $GAME_PAGE_ID:
+                    GameHelper::sendAnswer($input);
                     break;
                 default:
                     NyHelper::sendAnswer($input);
