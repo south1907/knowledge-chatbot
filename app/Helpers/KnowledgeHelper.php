@@ -94,8 +94,6 @@ abstract class KnowledgeHelper
 
 			foreach ($answers as $answer) {
                 $objData = new FbAnswer($sender);
-				$jsonData = "";
-
 				if ($answer['type'] == 'text') {
 
 					$message = $answer['message'];
@@ -140,59 +138,28 @@ abstract class KnowledgeHelper
 				}
 
 				if ($answer['type'] == 'audio2') {
+                    // use audio google text to speed
 					$urlVoice = GoogleVoice::getUrlAudio($answer['content']);
-
 					$audio = new AudioMessage($urlVoice);
 					$objData->setAttachmentMessage('audio', $audio);
 
 					$jsonData = json_encode($objData);
-					$response = CurlHelper::send($url, $jsonData);
+					CurlHelper::send($url, $jsonData);
 				}
 
 				if ($answer['type'] == 'audio') {
+				    // use audio google translate
 					$voice = $answer['message'];
-
-					$attachment = Attachment::where([
-						'message'	=>	$voice,
-						'type'	=>	'audio'
-					])->first();
-
-					if ($attachment) {
-						$attachmentMessage = new AttachmentMessage($attachment->attachment_id);
-
-						$objData->setAttachmentMessage('audio', $attachmentMessage);
-
-					} else {
-						if (array_key_exists('url', $answer)) {
-							$urlVoice = $answer['url'];
-						} else {
-							// don't have attachment saved before ==> use google TTS
-							$urlVoice = GoogleTTS::getLinkTTS($voice);
-						}
-
-						$audio = new AudioMessage($urlVoice);
-						$objData->setAttachmentMessage('audio', $audio);
-					}
+                    if (array_key_exists('url', $answer)) {
+                        $urlVoice = $answer['url'];
+                    } else {
+                        $urlVoice = GoogleTTS::getLinkTTS($voice);
+                    }
+                    $audio = new AudioMessage($urlVoice);
+                    $objData->setAttachmentMessage('audio', $audio);
 
 					$jsonData = json_encode($objData);
-					$response = CurlHelper::send($url, $jsonData);
-
-					if (!$attachment) {
-
-						$resData = json_decode($response->getBody()->getContents(), true);
-
-						if (array_key_exists('attachment_id', $resData)) {
-
-							// save attachment db
-							$newAttach = new Attachment;
-							$newAttach->attachment_id = $resData['attachment_id'];
-							$newAttach->message = $voice;
-							$newAttach->type = 'audio';
-							$newAttach->url = $urlVoice;
-
-							$newAttach->save();
-						}
-					}
+					CurlHelper::send($url, $jsonData);
 				}
 
 				if ($answer['type'] == 'button') {

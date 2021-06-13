@@ -19,40 +19,6 @@ class MainController extends Controller
     	]);
     }
 
-    public function answerXSMB(Request $request) {
-    	if ($request->has('query')){
-    		$query = $request->input('query');
-
-    		$answer = XSMBHelper::answer($query);
-    		return response()->json([
-	    		'status'	=>	'SUCCESS',
-	    		'answer'	=>	$answer
-	    	]);
-    	} else {
-    		return response()->json([
-	    		'status'	=>	'FAIL',
-	    		'answer'	=>	'No query'
-	    	]);
-    	}
-    }
-
-    public function answerNy(Request $request) {
-        if ($request->has('query')){
-            $query = $request->input('query');
-
-            $answer = NyHelper::answer($query);
-            return response()->json([
-                'status'    =>  'SUCCESS',
-                'answer'    =>  $answer
-            ]);
-        } else {
-            return response()->json([
-                'status'    =>  'FAIL',
-                'answer'    =>  'No query'
-            ]);
-        }
-    }
-
     public function verifyWebhook (Request $request) {
     	/* validate verify token needed for setting up web hook */
 
@@ -81,36 +47,22 @@ class MainController extends Controller
 
         if (isset($input['entry'][0]['id'])) {
             $id_page = $input['entry'][0]['id'];
-
-            $NY_PAGE_ID = env("NY_PAGE_ID", "");
-            $XSMB_PAGE_ID = env("XSMB_PAGE_ID", "");
             $LQ_PAGE_ID = env("LQ_PAGE_ID", "");
             $NA_PAGE_ID = env("NA_PAGE_ID", "");
-            $PA_PAGE_ID = env("PA_PAGE_ID", "");
             $TA_PAGE_ID = env("TA_PAGE_ID", "");
 
-            if ($id_page == $NY_PAGE_ID) {
-                NyHelper::sendAnswer($input);
-            }
-
-            if ($id_page == $XSMB_PAGE_ID) {
-                XSMBHelper::sendAnswer($input);
-            }
-
-            if ($id_page == $LQ_PAGE_ID) {
-                LQHelper::sendAnswer($input);
-            }
-
-            if ($id_page == $NA_PAGE_ID) {
-                NaHelper::sendAnswer($input);
-            }
-
-            if ($id_page == $PA_PAGE_ID) {
-                PaHelper::sendAnswer($input);
-            }
-
-            if ($id_page == $TA_PAGE_ID) {
-                TaHelper::sendAnswer($input);
+            switch ($id_page) {
+                case $LQ_PAGE_ID:
+                    LQHelper::sendAnswer($input);
+                    break;
+                case $NA_PAGE_ID:
+                    NaHelper::sendAnswer($input);
+                    break;
+                case $TA_PAGE_ID:
+                    TaHelper::sendAnswer($input);
+                    break;
+                default:
+                    NyHelper::sendAnswer($input);
             }
         }
 
