@@ -27,11 +27,9 @@ class CurlHelper
 		    'headers' => $headers
 		]);
 
-		$response = $client->post($url,
-		    ['body' => $data]
-		);
-
-		return $response;
+        return $client->post($url,
+            ['body' => $data]
+        );
 	}
 
 	public static function get($url, $data, $headers = null) {
