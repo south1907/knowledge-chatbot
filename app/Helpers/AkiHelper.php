@@ -63,13 +63,13 @@ class AkiHelper extends KnowledgeHelper
                         $result[] = [
                             'id'	=>	null,
                             'type'	=>	'text',
-                            'message'	=>	'Name: ' . $resAns['name']
+                            'message'	=>	'Name: ' . $resAns['answers'][0]['name']
                         ];
 
                         $result[] = [
                             'id'	=>	null,
                             'type'	=>	'image',
-                            'url'	=>	$resAns['absolute_picture_path']
+                            'url'	=>	$resAns['answers'][0]['absolute_picture_path']
                         ];
                     } else {
                         // khong co ket qua, hoi tiep
