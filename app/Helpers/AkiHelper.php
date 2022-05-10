@@ -27,6 +27,7 @@ class AkiHelper extends KnowledgeHelper
                     $start = self::start($PID);
                     if (array_key_exists('answers', $start)) {
                         $count = 0;
+                        $listReply = [];
                         foreach ($start['answers'] as $ans) {
                             $listReply[] = [
                                 "content_type"		=> "text",
@@ -36,10 +37,11 @@ class AkiHelper extends KnowledgeHelper
                             $count += 1;
                         }
 
+                        $currentStep = $start['currentStep'] + 1;
                         $result[] = [
                             'id'	=>	null,
                             'type'	=>	'quick_reply',
-                            'message'	=>	'Choice: ',
+                            'message'	=>	$currentStep . '. ' . $start['question'],
                             'quick_replies' => json_encode($listReply)
                         ];
                     }
@@ -50,6 +52,47 @@ class AkiHelper extends KnowledgeHelper
             if ($query['type'] == 'postback') {
                 $payload = $query['content'];
 
+                if (strpos($payload, 'AKI::answer') !== false) {
+                    // xu ly cau tra loi
+                    $numberAnswer = explode("|", $payload)[1];
+
+                    $resAns = self::answerAki($PID, $numberAnswer);
+                    if ($resAns['guessCount'] > 0) {
+                        // co ket qua
+
+                        $result[] = [
+                            'id'	=>	null,
+                            'type'	=>	'text',
+                            'message'	=>	'Name: ' . $resAns['name']
+                        ];
+
+                        $result[] = [
+                            'id'	=>	null,
+                            'type'	=>	'image',
+                            'url'	=>	$resAns['absolute_picture_path']
+                        ];
+                    } else {
+                        // khong co ket qua, hoi tiep
+                        $count = 0;
+                        $listReply = [];
+                        foreach ($resAns['answers'] as $ans) {
+                            $listReply[] = [
+                                "content_type"		=> "text",
+                                "title"		=> $ans,
+                                "payload"	=> "AKI::answer|" . $count
+                            ];
+                            $count += 1;
+                        }
+
+                        $currentStep = $resAns['currentStep'] + 1;
+                        $result[] = [
+                            'id'	=>	null,
+                            'type'	=>	'quick_reply',
+                            'message'	=>	$currentStep . '. ' . $resAns['question'],
+                            'quick_replies' => json_encode($listReply)
+                        ];
+                    }
+                }
             }
         }
 		if (count($result) == 0) {
@@ -73,6 +116,18 @@ class AkiHelper extends KnowledgeHelper
         ];
         $dataJson = json_encode($data);
         $CLIENT_AKI = env("AKI_API_URL", "") . '/start';
+        $response = CurlHelper::send($CLIENT_AKI, $dataJson);
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    private static function answerAki($userId, $answer) {
+        $data = [
+            'user_id'   =>  $userId,
+            'answer'   =>  $answer,
+        ];
+        $dataJson = json_encode($data);
+        $CLIENT_AKI = env("AKI_API_URL", "") . '/answer';
         $response = CurlHelper::send($CLIENT_AKI, $dataJson);
 
         return json_decode($response->getBody()->getContents(), true);
