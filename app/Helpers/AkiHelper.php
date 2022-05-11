@@ -29,26 +29,35 @@ class AkiHelper extends KnowledgeHelper
                         'message'	=>	'Hello, I am Ây Ai Đây. Think about a real or fictional character. I will try to guess who it is'
                     ];
                     $start = self::start($PID);
-                    if (array_key_exists('answers', $start)) {
-                        $count = 0;
-                        $listReply = [];
-                        foreach ($start['answers'] as $ans) {
-                            $listReply[] = [
-                                "content_type"		=> "text",
-                                "title"		=> $ans,
-                                "payload"	=> "AKI::answer|" . $count
-                            ];
-                            $count += 1;
-                        }
+                    if ($start) {
+                        if (array_key_exists('answers', $start)) {
+                            $count = 0;
+                            $listReply = [];
+                            foreach ($start['answers'] as $ans) {
+                                $listReply[] = [
+                                    "content_type"		=> "text",
+                                    "title"		=> $ans,
+                                    "payload"	=> "AKI::answer|" . $count
+                                ];
+                                $count += 1;
+                            }
 
-                        $currentStep = $start['currentStep'] + 1;
+                            $currentStep = $start['currentStep'] + 1;
+                            $result[] = [
+                                'id'	=>	null,
+                                'type'	=>	'quick_reply',
+                                'message'	=>	$currentStep . '. ' . $start['question'],
+                                'quick_replies' => json_encode($listReply)
+                            ];
+                        }
+                    } else {
                         $result[] = [
                             'id'	=>	null,
-                            'type'	=>	'quick_reply',
-                            'message'	=>	$currentStep . '. ' . $start['question'],
-                            'quick_replies' => json_encode($listReply)
+                            'type'	=>	'text',
+                            'message'	=>	'Have a trouble, type "start" to restart'
                         ];
                     }
+
                 }
 
                 if ($message == 'help') {
@@ -167,8 +176,10 @@ class AkiHelper extends KnowledgeHelper
         $dataJson = json_encode($data);
         $CLIENT_AKI = env("AKI_API_URL", "") . '/start';
         $response = CurlHelper::send($CLIENT_AKI, $dataJson);
-
-        return json_decode($response->getBody()->getContents(), true);
+        if ($response) {
+            return json_decode($response->getBody()->getContents(), true);
+        }
+        return null;
     }
 
     private static function answerAki($userId, $answer) {
@@ -179,8 +190,10 @@ class AkiHelper extends KnowledgeHelper
         $dataJson = json_encode($data);
         $CLIENT_AKI = env("AKI_API_URL", "") . '/answer';
         $response = CurlHelper::send($CLIENT_AKI, $dataJson);
-
-        return json_decode($response->getBody()->getContents(), true);
+        if ($response) {
+            return json_decode($response->getBody()->getContents(), true);
+        }
+        return null;
     }
 }
 ?>
