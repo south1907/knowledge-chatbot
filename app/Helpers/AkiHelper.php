@@ -8,7 +8,11 @@ class AkiHelper extends KnowledgeHelper
 {
 	public static function answer($query, $page_id, $PID) {
 		$random_string = [
-			'Tôi yêu Aki',
+			'I am Ây Ai Đây.',
+			'Typing "start" to start now',
+			'Made by Heva',
+			'Cyberbot from with love',
+			'Have a nice day',
 		];
 
 		$result = [];
@@ -45,7 +49,19 @@ class AkiHelper extends KnowledgeHelper
                             'quick_replies' => json_encode($listReply)
                         ];
                     }
+                }
 
+                if ($message == 'help') {
+                    $result[] = [
+                        'id'	=>	null,
+                        'type'	=>	'text',
+                        'message'	=>	'Hello, I am Ây Ai Đây.'
+                    ];
+                    $result[] = [
+                        'id'	=>	null,
+                        'type'	=>	'text',
+                        'message'	=>	'Typing "start" to start now'
+                    ];
                 }
             }
 
@@ -57,41 +73,50 @@ class AkiHelper extends KnowledgeHelper
                     $numberAnswer = explode("|", $payload)[1];
 
                     $resAns = self::answerAki($PID, $numberAnswer);
-                    if ($resAns['guessCount'] > 0) {
-                        // co ket qua
+                    if ($resAns) {
+                        if ($resAns['guessCount'] > 0) {
+                            // co ket qua
 
+                            $result[] = [
+                                'id'	=>	null,
+                                'type'	=>	'text',
+                                'message'	=>	'Name: ' . $resAns['answers'][0]['name']
+                            ];
+
+                            $result[] = [
+                                'id'	=>	null,
+                                'type'	=>	'image',
+                                'url'	=>	$resAns['answers'][0]['absolute_picture_path']
+                            ];
+                        } else {
+                            // khong co ket qua, hoi tiep
+                            $count = 0;
+                            $listReply = [];
+                            foreach ($resAns['answers'] as $ans) {
+                                $listReply[] = [
+                                    "content_type"		=> "text",
+                                    "title"		=> $ans,
+                                    "payload"	=> "AKI::answer|" . $count
+                                ];
+                                $count += 1;
+                            }
+
+                            $currentStep = $resAns['currentStep'] + 1;
+                            $result[] = [
+                                'id'	=>	null,
+                                'type'	=>	'quick_reply',
+                                'message'	=>	$currentStep . '. ' . $resAns['question'],
+                                'quick_replies' => json_encode($listReply)
+                            ];
+                        }
+                    } else {
                         $result[] = [
                             'id'	=>	null,
                             'type'	=>	'text',
-                            'message'	=>	'Name: ' . $resAns['answers'][0]['name']
-                        ];
-
-                        $result[] = [
-                            'id'	=>	null,
-                            'type'	=>	'image',
-                            'url'	=>	$resAns['answers'][0]['absolute_picture_path']
-                        ];
-                    } else {
-                        // khong co ket qua, hoi tiep
-                        $count = 0;
-                        $listReply = [];
-                        foreach ($resAns['answers'] as $ans) {
-                            $listReply[] = [
-                                "content_type"		=> "text",
-                                "title"		=> $ans,
-                                "payload"	=> "AKI::answer|" . $count
-                            ];
-                            $count += 1;
-                        }
-
-                        $currentStep = $resAns['currentStep'] + 1;
-                        $result[] = [
-                            'id'	=>	null,
-                            'type'	=>	'quick_reply',
-                            'message'	=>	$currentStep . '. ' . $resAns['question'],
-                            'quick_replies' => json_encode($listReply)
+                            'message'	=>	'Have a trouble, type "start" to restart'
                         ];
                     }
+
                 }
             }
         }
