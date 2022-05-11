@@ -68,6 +68,14 @@ class AkiHelper extends KnowledgeHelper
             if ($query['type'] == 'postback') {
                 $payload = $query['content'];
 
+                if (strpos($payload, 'AKI::donate') !== false) {
+                    $result[] = [
+                        'id'	=>	null,
+                        'type'	=>	'text',
+                        'message'	=>	'Love youuuuu ☺️☺️☺️'
+                    ];
+                }
+
                 if (strpos($payload, 'AKI::answer') !== false) {
                     // xu ly cau tra loi
                     $numberAnswer = explode("|", $payload)[1];
@@ -87,6 +95,23 @@ class AkiHelper extends KnowledgeHelper
                                 'id'	=>	null,
                                 'type'	=>	'image',
                                 'url'	=>	$resAns['answers'][0]['absolute_picture_path']
+                            ];
+                            $result[] = [
+                                'id'	=>	null,
+                                'type'	=>	'button',
+                                'message'	=>	'Let me know',
+                                'buttons' => json_encode([
+                                    [
+                                        "type"		=> "web_url",
+                                        "title"		=> "Feedback",
+                                        "url"	=> 'https://docs.google.com/forms/d/e/1FAIpQLSf38jby1ae34rZRdbfZmKr4X8KkC-cKbFQkbEzGyXxmgXWT_g/viewform'
+                                    ],
+                                    [
+                                        "type"		=> "postback",
+                                        "title"		=> "Donate",
+                                        "payload"	=> "AKI::donate"
+                                    ]
+                                ])
                             ];
                         } else {
                             // khong co ket qua, hoi tiep
