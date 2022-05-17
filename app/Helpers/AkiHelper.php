@@ -22,42 +22,15 @@ class AkiHelper extends KnowledgeHelper
             if ($query['type'] == 'text') {
                 $message = mb_strtolower($query['content']);
 
-                if ($message == 'start') {
-                    $result[] = [
-                        'id'	=>	null,
-                        'type'	=>	'text',
-                        'message'	=>	'Hello, I am Ây Ai Đây. Think about a real or fictional character. I will try to guess who it is'
-                    ];
-                    $start = self::start($PID);
-                    if ($start) {
-                        if (array_key_exists('answers', $start)) {
-                            $count = 0;
-                            $listReply = [];
-                            foreach ($start['answers'] as $ans) {
-                                $listReply[] = [
-                                    "content_type"		=> "text",
-                                    "title"		=> $ans,
-                                    "payload"	=> "AKI::answer|" . $count
-                                ];
-                                $count += 1;
-                            }
-
-                            $currentStep = $start['currentStep'] + 1;
-                            $result[] = [
-                                'id'	=>	null,
-                                'type'	=>	'quick_reply',
-                                'message'	=>	$currentStep . '. ' . $start['question'],
-                                'quick_replies' => json_encode($listReply)
-                            ];
-                        }
-                    } else {
-                        $result[] = [
-                            'id'	=>	null,
-                            'type'	=>	'text',
-                            'message'	=>	'Have a trouble, type "start" to restart'
-                        ];
+                if (strpos($message, 'start') !== false) {
+                    $region = 'en';
+                    if (strpos($message, 'object') !== false) {
+                        $region = 'en_objects';
                     }
-
+                    if (strpos($message, 'animal') !== false) {
+                        $region = 'en_animals';
+                    }
+                    $result = self::getStart($PID, $region);
                 }
 
                 if ($message == 'help') {
@@ -169,9 +142,50 @@ class AkiHelper extends KnowledgeHelper
 		return $result;
 	}
 
-	private static function start($userId) {
+    private static function getStart($PID, $region) {
+        $result = [];
+        $result[] = [
+            'id'	=>	null,
+            'type'	=>	'text',
+            'message'	=>	'Hello, I am Ây Ai Đây. Think about a real or fictional character. I will try to guess who it is'
+        ];
+        $start = self::start($PID, $region);
+        if ($start) {
+            if (array_key_exists('answers', $start)) {
+                $count = 0;
+                $listReply = [];
+                foreach ($start['answers'] as $ans) {
+                    $listReply[] = [
+                        "content_type"		=> "text",
+                        "title"		=> $ans,
+                        "payload"	=> "AKI::answer|" . $count
+                    ];
+                    $count += 1;
+                }
+
+                $currentStep = $start['currentStep'] + 1;
+                $result[] = [
+                    'id'	=>	null,
+                    'type'	=>	'quick_reply',
+                    'message'	=>	$currentStep . '. ' . $start['question'],
+                    'quick_replies' => json_encode($listReply)
+                ];
+            }
+        } else {
+            $result[] = [
+                'id'	=>	null,
+                'type'	=>	'text',
+                'message'	=>	'Have a trouble, type "start" to restart'
+            ];
+        }
+
+        return $result;
+    }
+
+	private static function start($userId, $region) {
         $data = [
-            'user_id'   =>  $userId
+            'user_id'   =>  $userId,
+            'region'   =>  $region
         ];
         $dataJson = json_encode($data);
         $CLIENT_AKI = env("AKI_API_URL", "") . '/start';
