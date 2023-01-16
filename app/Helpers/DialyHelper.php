@@ -122,7 +122,6 @@ class DialyHelper extends KnowledgeHelper
 				]
 			];
 		}
-        print_r($result);die;
 
 		return $result;
 	}
