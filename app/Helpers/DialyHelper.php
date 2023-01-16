@@ -90,11 +90,9 @@ class DialyHelper extends KnowledgeHelper
                             ]
                         ];
                         $result[] = [
-                            [
-                                'id'	=>	null,
-                                'type'	=>	'text',
-                                'message'	=>	'Đáp án đúng là ' . $country['name']
-                            ]
+                            'id'	=>	null,
+                            'type'	=>	'text',
+                            'message'	=>	'Đáp án đúng là ' . $country['name']
                         ];
                     }
 
