@@ -9,6 +9,7 @@ use App\Helpers\NyHelper;
 use App\Helpers\LQHelper;
 use App\Helpers\TaHelper;
 use App\Helpers\AkiHelper;
+use App\Helpers\DialyHelper;
 
 class MainController extends Controller
 {
@@ -52,6 +53,7 @@ class MainController extends Controller
             $TA_PAGE_ID = env("TA_PAGE_ID", "");
             $GAME_PAGE_ID = env("GAME_PAGE_ID", "");
             $AKI_PAGE_ID = env("AKI_PAGE_ID", "");
+            $DIALY_PAGE_ID = env("DIALY_PAGE_ID", "");
 
             switch ($id_page) {
                 case $LQ_PAGE_ID:
@@ -68,6 +70,9 @@ class MainController extends Controller
                     break;
                 case $AKI_PAGE_ID:
                     AkiHelper::sendAnswer($input);
+                    break;
+                case $DIALY_PAGE_ID:
+                    DialyHelper::sendAnswer($input);
                     break;
                 default:
                     NyHelper::sendAnswer($input);
