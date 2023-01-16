@@ -114,7 +114,7 @@ for country in countries:
 	print(name)
 	link_country = domain + i_link
 	# link_country = 'https://vi.wikipedia.org/wiki/Myanmar'
-	if link_country == 'https://vi.wikipedia.org/wiki/Guyane_thu%E1%BB%99c_Ph%C3%A1p' or link_country == 'https://vi.wikipedia.org/wiki/Qu%E1%BA%A7n_%C4%91%E1%BA%A3o_Eo_Bi%E1%BB%83n':
+	if link_country == 'https://vi.wikipedia.org/wiki/Guyane_thu%E1%BB%99c_Ph%C3%A1p' or link_country == 'https://vi.wikipedia.org/wiki/Qu%E1%BA%A7n_%C4%91%E1%BA%A3o_Eo_Bi%E1%BB%83n' or link_country == 'https://vi.wikipedia.org/wiki/Martinique':
 		continue
 	detail = get_detail_country(link_country)
 
