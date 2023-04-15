@@ -99,7 +99,7 @@ class CookHelper extends KnowledgeHelper
             'step_by_step'   => 'Step by step',
         ];
         foreach ($arrKeyInfo as $key => $value) {
-            if (array_key_exists($key, $recipe)) {
+            if (isset($recipe[$key])) {
                 $moreInfo .= $value . ': ' . $recipe[$key] . "\n";
             }
         }
