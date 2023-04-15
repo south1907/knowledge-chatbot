@@ -87,14 +87,12 @@ class CookHelper extends KnowledgeHelper
             'message'	=>	$text
         ];
 
-        if (array_key_exists('image', $recipe)) {
-            $image = $recipe['avatar'];
-            $result[] = [
-                'id'	=>	null,
-                'type'	=>	'image',
-                'url'	=>	$image
-            ];
-        }
+        $result[] = [
+            'id'	=>	null,
+            'type'	=>	'image',
+            'url'	=>	$recipe['image']
+        ];
+
         $moreInfo = "";
         $arrKeyInfo = [
             'summary'   => 'Summary',
