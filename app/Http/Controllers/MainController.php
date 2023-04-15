@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\CookHelper;
 use App\Helpers\GameHelper;
 use App\Helpers\NaHelper;
 use Illuminate\Http\Request;
@@ -54,6 +55,7 @@ class MainController extends Controller
             $GAME_PAGE_ID = env("GAME_PAGE_ID", "");
             $AKI_PAGE_ID = env("AKI_PAGE_ID", "");
             $DIALY_PAGE_ID = env("DIALY_PAGE_ID", "");
+            $COOK_PAGE_ID = env("COOK_PAGE_ID", "");
 
             switch ($id_page) {
                 case $LQ_PAGE_ID:
@@ -73,6 +75,9 @@ class MainController extends Controller
                     break;
                 case $DIALY_PAGE_ID:
                     DialyHelper::sendAnswer($input);
+                    break;
+                case $COOK_PAGE_ID:
+                    CookHelper::sendAnswer($input);
                     break;
                 default:
                     NyHelper::sendAnswer($input);

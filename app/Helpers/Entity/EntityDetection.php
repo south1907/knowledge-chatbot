@@ -4,8 +4,11 @@ namespace App\Helpers\Entity;
 use App\Helpers\CurlHelper;
 use App\Models\Hero;
 use App\Models\NarutoCharacter;
+use App\Models\Recipe;
 use App\Models\TarotCard;
 use GuzzleHttp\Client;
+
+use Illuminate\Support\Facades\Storage;
 
 class EntityDetection
 {
@@ -144,5 +147,54 @@ class EntityDetection
             }
         }
         return $result;
+    }
+
+    public static function findRecipes($sentence) {
+        $recipes = [];
+        $detectEntity = self::detectWordCook($sentence);
+        if ($detectEntity) {
+            $arrayWhere = [];
+            foreach ($detectEntity as $entity) {
+                $arrayWhere[] = ['name', 'like', '%'. $entity .'%'];
+            }
+            $findRecipes = Recipe::where($arrayWhere);
+            $recipes = $findRecipes->inRandomOrder()->limit(5)->get()->toArray();
+
+            if (!$recipes) {
+                $findRecipes = Recipe::where('name', 'like', '%'. $detectEntity[0] .'%');
+                $count = 0;
+                foreach ($detectEntity as $entity) {
+                    $count += 1;
+                    if ($count == 1) {
+                        continue;
+                    }
+                    $findRecipes = $findRecipes->orWhere('name', 'like', '%'. $entity .'%');
+                }
+                $recipes = $findRecipes->inRandomOrder()->limit(5)->get()->toArray();
+            }
+        }
+        return $recipes;
+    }
+
+    public static function detectWordCook($sentence) {
+        $results = [];
+        $arrWord = [];
+        if (Storage::exists('cook_dictionaries.txt')) {
+            $contentSystem = Storage::get('cook_dictionaries.txt');
+
+            if ($contentSystem != '') {
+                $arrWord = explode("\n", $contentSystem);
+            }
+        }
+
+        if ($arrWord && $sentence) {
+            $splitSentence = explode(" ", $sentence);
+            foreach ($splitSentence as $word) {
+                if (in_array($word, $arrWord)) {
+                    $results[] = $word;
+                }
+            }
+        }
+        return $results;
     }
 }
