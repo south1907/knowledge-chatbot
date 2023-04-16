@@ -94,7 +94,7 @@ class CookHelper extends KnowledgeHelper
         ];
 
         if (isset($recipe['summary'])) {
-            $summary = 'Summary: ' . '\n';
+            $summary = "Summary: \n";
             $summary .= $recipe['summary'];
 
             $result[] = [
@@ -105,11 +105,11 @@ class CookHelper extends KnowledgeHelper
         }
 
         if (isset($recipe['ingredients'])) {
-            $strIngredients = 'Ingredients: ' . '\n';
+            $strIngredients = "Ingredients: \n";
             $ingredients = json_decode($recipe['ingredients']);
 
             foreach ($ingredients as $ingredient) {
-                $strIngredients .= " - " . $ingredient->name;
+                $strIngredients .= " - " . ($ingredient->name + "\n");
             }
             $result[] = [
                 'id'	=>	null,
@@ -119,7 +119,7 @@ class CookHelper extends KnowledgeHelper
         }
 
         if (isset($recipe['step_by_step'])) {
-            $step = 'Step by step: ' . '\n';
+            $step = "Step by step: \n";
             $step .= $recipe['step_by_step'];
 
             $result[] = [
