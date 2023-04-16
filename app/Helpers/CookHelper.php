@@ -109,7 +109,7 @@ class CookHelper extends KnowledgeHelper
             $ingredients = json_decode($recipe['ingredients']);
 
             foreach ($ingredients as $ingredient) {
-                $strIngredients .= " - " . ($ingredient->name + "\n");
+                $strIngredients .= " - " . $ingredient->name . "\n";
             }
             $result[] = [
                 'id'	=>	null,
