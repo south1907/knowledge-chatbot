@@ -93,21 +93,41 @@ class CookHelper extends KnowledgeHelper
             'url'	=>	$recipe['image']
         ];
 
-        $moreInfo = "";
-        $arrKeyInfo = [
-            'summary'   => 'Summary',
-            'step_by_step'   => 'Step by step',
-        ];
-        foreach ($arrKeyInfo as $key => $value) {
-            if (isset($recipe[$key])) {
-                $moreInfo .= $value . ': ' . $recipe[$key] . "\n";
-            }
+        if (isset($recipe['summary'])) {
+            $summary = 'Summary: ' . '\n';
+            $summary .= $recipe['summary'];
+
+            $result[] = [
+                'id'	=>	null,
+                'type'	=>	'text',
+                'message'	=>	$summary
+            ];
         }
-        $result[] = [
-            'id'	=>	null,
-            'type'	=>	'text',
-            'message'	=>	$moreInfo
-        ];
+
+        if (isset($recipe['ingredients'])) {
+            $strIngredients = 'Ingredients: ' . '\n';
+            $ingredients = json_decode($recipe['ingredients']);
+
+            foreach ($ingredients as $ingredient) {
+                $strIngredients .= " - " . $ingredient->name;
+            }
+            $result[] = [
+                'id'	=>	null,
+                'type'	=>	'text',
+                'message'	=>	$strIngredients
+            ];
+        }
+
+        if (isset($recipe['step_by_step'])) {
+            $step = 'Step by step: ' . '\n';
+            $step .= $recipe['step_by_step'];
+
+            $result[] = [
+                'id'	=>	null,
+                'type'	=>	'text',
+                'message'	=>	$step
+            ];
+        }
 
         return $result;
     }
