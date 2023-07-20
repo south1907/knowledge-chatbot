@@ -11,6 +11,7 @@ use App\Helpers\LQHelper;
 use App\Helpers\TaHelper;
 use App\Helpers\AkiHelper;
 use App\Helpers\DialyHelper;
+use App\Helpers\GPTHelper;
 
 class MainController extends Controller
 {
@@ -56,6 +57,7 @@ class MainController extends Controller
             $AKI_PAGE_ID = env("AKI_PAGE_ID", "");
             $DIALY_PAGE_ID = env("DIALY_PAGE_ID", "");
             $COOK_PAGE_ID = env("COOK_PAGE_ID", "");
+            $GPT_PAGE_ID = env("GPT_PAGE_ID", "");
 
             switch ($id_page) {
                 case $LQ_PAGE_ID:
@@ -78,6 +80,9 @@ class MainController extends Controller
                     break;
                 case $COOK_PAGE_ID:
                     CookHelper::sendAnswer($input);
+                    break;
+                case $GPT_PAGE_ID:
+                    GPTHelper::sendAnswer($input);
                     break;
                 default:
                     NyHelper::sendAnswer($input);

@@ -77,8 +77,9 @@ abstract class KnowledgeHelper
 			// save log
 			$log = new Log;
 			$log->PID = $sender;
-			$log->message = json_encode($answers);
-			$log->page_id = $id_page;
+			$log->message = json_encode($message);
+            $log->answer = json_encode($answers);
+            $log->page_id = $id_page;
 			$log->answer_id = $answer_id;
 			$log->save();
 

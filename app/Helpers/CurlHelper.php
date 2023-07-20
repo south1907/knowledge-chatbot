@@ -126,5 +126,25 @@ class CurlHelper
         return json_decode($response->getBody()->getContents(), true);
     }
 
+    public static function answerFromGPT($message, $conversation) {
+        $GPT_API_URL = env("GPT_API_URL", "");
+        $data = [
+            "system_message"    =>  $message,
+            "conversation"      =>  $conversation
+        ];
+        $dataJson = json_encode($data);
+        $headers = [
+            'content-type'	=>	'application/json'
+        ];
+        try {
+            $response = CurlHelper::post($GPT_API_URL, $dataJson, $headers);
+
+            $body = $response->getBody();
+            $obj = json_decode($body, true);
+            return $obj['response'];
+        } catch (\Exception $e){}
+        return null;
+    }
+
 }
 ?>
